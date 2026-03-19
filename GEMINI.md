@@ -11,8 +11,9 @@
 
 ## 重要文档
 
-- [架构设计：nanobot 基础架构](./cafe_docs/2026-03-18-16-54-架构设计-nanobot基础架构.md)
-- [配置计划: Bot 配置计划](./cafe_docs/2026-03-18-17-58-需求-Bot配置计划.md)
+- [设计：nanobot 基础架构](./cafe_docs/2026-03-18-16-54-设计-nanobot基础架构.md)
+- [需求：模型对接与 Discord 接入](./cafe_docs/2026-03-18-17-58-需求-模型对接与 Discord 接入.md)
+- [需求：Bot 配置计划](./cafe_docs/2026-03-18-19-37-需求-Bot配置计划.md)
 
 ## 🛠️ 核心 Agent Skills
 
