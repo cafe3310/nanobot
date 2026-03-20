@@ -8,22 +8,17 @@
 - [x] 实现 `launcher.py` 自动注入 `config.json` 和 `workspace` 路径。 (2026-03-20)
 - [x] 完成项目初始部署与虚拟环境配置。 (2026-03-20)
 
-## 🧪 第一阶段：自定义模型与推理调试 (优先级：最高)
+## 🧪 第一阶段：自定义模型与推理调试 - 已完成
 目标：确保 Bot 能够稳定连接自研模型，且推理过程完全透明。
-- [ ] **1.1 初始化私有配置**
-  - 执行 `nb onboard` 在 `cafeext/` 下生成初始配置。
-  - 在 `cafeext/config.json` 中配置 `custom` provider 的 API Key 和 Base URL。
-- [ ] **1.2 验证模型连通性**
-  - 运行 `nb status` 检查 Provider 状态。
-  - 运行 `nb agent -m "hi"` 验证是否能收到正确回复。
-- [ ] **1.3 实现原始推理日志 (Raw Logging)**
-  - 在 `cafeext/py/` 下实现 `litellm` 回调拦截器。
-  - 将原始 JSON 请求与响应实时写入 `cafeext/workspace/logs/inference.log`。
-  - **Milestone**: 开发者能实时审计每一轮对话的 Prompt 和 Completion 原文。
+- [x] **1.1 初始化私有配置与密钥隔离** (2026-03-20)
+- [x] **1.2 验证模型连通性 (Hello World)** (2026-03-20)
+- [x] **1.3 实现原始推理日志 (Raw Logging)** (2026-03-20)
+  - 成功实现对 `CustomProvider` 的深度拦截与 JSONL 存储。
+  - 增加 `nb logs`, `nb config`, `nb workspace` 等便捷命令。
 
 ## 💬 第二阶段：Discord 平台适配 (优先级：高)
 目标：将 Bot 接入 Discord 并实现基础互动。
-- [ ] **2.1 Discord Bot 基础接入**
+- [x] **2.1 Discord Bot 基础接入** (2026-03-21)
   - 在 `cafeext/config.json` 中配置 Discord 渠道参数。
   - 验证 Bot 在 Discord 频道上线。
 - [ ] **2.2 实现 @ 提及响应**

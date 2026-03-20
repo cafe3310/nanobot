@@ -40,19 +40,29 @@ def setup_injection():
     app.info.name = "nb"
     app.info.help = f"🐈 nanobot [Sidecar Active: {cafeext_dir}]"
 
-    # 1. 拦截配置加载，注入 API Key
+    # 1. 拦截配置加载，注入 API Key 与 Token
     try:
         config = load_config(config_path)
+        
+        # 注入自定义模型 Key (ProviderConfig 是 Pydantic 对象)
         custom_key = os.environ.get("CUSTOM_API_KEY")
         if custom_key and hasattr(config.providers, 'custom'):
             config.providers.custom.api_key = custom_key
+            
+        # 注入 Discord Token (channels 子项是字典)
+        discord_token = os.environ.get("DISCORD_TOKEN")
+        if discord_token:
+            # 兼容性处理：如果 discord 配置已存在且为字典，则更新它
+            discord_cfg = getattr(config.channels, 'discord', None)
+            if isinstance(discord_cfg, dict):
+                discord_cfg["token"] = discord_token
             
         import nanobot.config.loader
         nanobot.config.loader.load_config = lambda *args, **kwargs: config
     except Exception as e:
         print(f"Warning: Config injection failed: {e}")
 
-    # 2. 注入 Sidecar 便捷命令 (并分组)
+    # 2. 注入 Sidecar 便捷命令
     panel_name = "Sidecar (Custom)"
     
     @app.command(name="config", help="Open private config.json with Zed", rich_help_panel=panel_name)
@@ -74,7 +84,6 @@ def setup_injection():
         latest_log = log_files[-1]
         print(f"Tailing latest log: {latest_log.name}")
         try:
-            # -f follow, -n 20 show last 20 lines
             subprocess.run(["tail", "-f", "-n", "20", str(latest_log)])
         except KeyboardInterrupt:
             print("\nStopped tailing logs.")
@@ -88,12 +97,8 @@ def setup_injection():
         
         @wraps(original_chat)
         async def patched_chat(self, *args, **kwargs):
-            messages = kwargs.get("messages")
-            if messages is None and len(args) > 0:
-                messages = args[0]
-            tools = kwargs.get("tools")
-            if tools is None and len(args) > 1:
-                tools = args[1]
+            messages = kwargs.get("messages") or (args[0] if len(args) > 0 else [])
+            tools = kwargs.get("tools") or (args[1] if len(args) > 1 else None)
 
             log_kwargs = {
                 "model": kwargs.get("model") or getattr(self, "default_model", "unknown"),
@@ -125,22 +130,15 @@ def setup_injection():
         print(f"Warning: LiteLLM logging setup failed: {e}")
 
 def main():
-    # 1. 加载私有密钥
     load_dotenv(cafeext_dir / ".env")
-    
-    # 2. 锁定路径
     set_config_path(cafeext_dir / "config.json")
-    
-    # 3. 注入逻辑 (含新增命令)
     setup_injection()
 
-    # 4. 自动注入参数
     workspace_path = cafeext_dir / "workspace"
     if len(sys.argv) > 1 and sys.argv[1] == "onboard":
         if "--workspace" not in sys.argv and "-w" not in sys.argv:
             sys.argv.extend(["--workspace", str(workspace_path)])
             
-    # 启动
     app()
 
 if __name__ == "__main__":
