@@ -7,33 +7,40 @@ DISABLED_TOOLS = ["exec", "spawn"]
 def apply_security_policy():
     """通过 Monkey Patch 强制执行安全策略。"""
     try:
-        # 1. 禁用 Agent Skills
+        # 1. 深度拦截 Agent Skills (SkillsLoader)
         from nanobot.agent.skills import SkillsLoader
-        original_list_skills = SkillsLoader.list_skills
         
+        # 拦截 1: 屏蔽列表显示
+        original_list_skills = SkillsLoader.list_skills
         def patched_list_skills(self, *args, **kwargs):
             skills = original_list_skills(self, *args, **kwargs)
-            # 过滤掉禁用的技能
             return [s for s in skills if s["name"] not in DISABLED_SKILLS]
-        
         SkillsLoader.list_skills = patched_list_skills
         
+        # 拦截 2: 屏蔽内容读取 (这是核心安全开关，确保 load_skill 返回 None)
+        original_load_skill = SkillsLoader.load_skill
+        def patched_load_skill(self, name):
+            if name in DISABLED_SKILLS:
+                return None
+            return original_load_skill(self, name)
+        SkillsLoader.load_skill = patched_load_skill
+        
+        # 拦截 3: 屏蔽元数据 (确保 build_skills_summary 看不到它)
+        original_get_meta = SkillsLoader.get_skill_metadata
+        def patched_get_meta(self, name):
+            if name in DISABLED_SKILLS:
+                return None
+            return original_get_meta(self, name)
+        SkillsLoader.get_skill_metadata = patched_get_meta
+
         # 2. 禁用 核心工具 (Tools) - 动态拦截注册行为
         from nanobot.agent.tools.registry import ToolRegistry
         original_register = ToolRegistry.register
-        
         def patched_register(self, tool):
             if tool.name in DISABLED_TOOLS:
-                # 拒绝注册危险工具
                 return
             return original_register(self, tool)
-            
         ToolRegistry.register = patched_register
-        
-        # 3. 针对已实例化对象的「补救式」清理 (双重保险)
-        # 如果有些工具在拦截器加载前已经注入了某个全局注册表，这里可以手动清理
-        # 但在我们的 launcher 流程中，setup_injection 发生在 app() 运行前，
-        # 所以主要的拦截逻辑是在 (2) 中完成的。
         
     except Exception as e:
         print(f"Warning: Failed to apply security policy: {e}")

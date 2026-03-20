@@ -2,6 +2,7 @@ import sys
 import os
 import json
 import subprocess
+import shutil
 from pathlib import Path
 from functools import wraps
 from datetime import datetime
@@ -42,6 +43,7 @@ def setup_injection():
 
     config_path = cafeext_dir / "config.json"
     workspace_path = cafeext_dir / "workspace"
+    session_path = workspace_path / "sessions"
     log_dir = cafeext_dir / "logs"
     
     # 修正 Typer 显示名称和描述
@@ -51,25 +53,20 @@ def setup_injection():
     # 1. 拦截配置加载，注入 API Key 与 Token
     try:
         config = load_config(config_path)
-        
-        # 注入自定义模型 Key
         custom_key = os.environ.get("CUSTOM_API_KEY")
         if custom_key and hasattr(config.providers, 'custom'):
             config.providers.custom.api_key = custom_key
-            
-        # 注入 Discord Token
         discord_token = os.environ.get("DISCORD_TOKEN")
         if discord_token:
             discord_cfg = getattr(config.channels, 'discord', None)
             if isinstance(discord_cfg, dict):
                 discord_cfg["token"] = discord_token
-            
         import nanobot.config.loader
         nanobot.config.loader.load_config = lambda *args, **kwargs: config
     except Exception as e:
         print(f"Warning: Config injection failed: {e}")
 
-    # 2. 注入 Sidecar 便捷命令
+    # 2. 注入 Sidecar 便捷命令 (并分组)
     panel_name = "Sidecar (Custom)"
     
     @app.command(name="config", help="Open private config.json with Zed", rich_help_panel=panel_name)
@@ -95,18 +92,27 @@ def setup_injection():
         except KeyboardInterrupt:
             print("\nStopped tailing logs.")
 
+    @app.command(name="reset", help="Clear session history and logs", rich_help_panel=panel_name)
+    def reset_data(logs: bool = False):
+        if session_path.exists():
+            print(f"Clearing sessions in {session_path}...")
+            shutil.rmtree(session_path)
+            session_path.mkdir(parents=True, exist_ok=True)
+        if logs and log_dir.exists():
+            print(f"Clearing inference logs in {log_dir}...")
+            for f in log_dir.glob("*.jsonl"):
+                f.unlink()
+        print("Done. Bot memory is now fresh.")
+
     # 3. 拦截 CustomProvider 以捕获日志
     try:
         from nanobot.providers.custom_provider import CustomProvider
         from cafeext.py.callbacks.logger import cafe_input_callback, cafe_success_callback, cafe_failure_callback
-        
         original_chat = CustomProvider.chat
-        
         @wraps(original_chat)
         async def patched_chat(self, *args, **kwargs):
             messages = kwargs.get("messages") or (args[0] if len(args) > 0 else [])
             tools = kwargs.get("tools") or (args[1] if len(args) > 1 else None)
-
             log_kwargs = {
                 "model": kwargs.get("model") or getattr(self, "default_model", "unknown"),
                 "api_base": self.api_base,
@@ -140,12 +146,10 @@ def main():
     load_dotenv(cafeext_dir / ".env")
     set_config_path(cafeext_dir / "config.json")
     setup_injection()
-
     workspace_path = cafeext_dir / "workspace"
     if len(sys.argv) > 1 and sys.argv[1] == "onboard":
         if "--workspace" not in sys.argv and "-w" not in sys.argv:
             sys.argv.extend(["--workspace", str(workspace_path)])
-            
     app()
 
 if __name__ == "__main__":
