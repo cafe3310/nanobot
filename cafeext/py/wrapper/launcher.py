@@ -34,6 +34,7 @@ def setup_injection():
     """核心注入逻辑：配置、Key 与 日志拦截"""
     config_path = cafeext_dir / "config.json"
     workspace_path = cafeext_dir / "workspace"
+    log_dir = cafeext_dir / "logs"
     
     # 修正 Typer 显示名称和描述
     app.info.name = "nb"
@@ -63,6 +64,20 @@ def setup_injection():
     def open_workspace():
         print(f"Opening {workspace_path} in Finder...")
         subprocess.run(["open", str(workspace_path)])
+
+    @app.command(name="logs", help="Tail the latest inference JSONL logs", rich_help_panel=panel_name)
+    def tail_logs():
+        log_files = sorted(log_dir.glob("*.jsonl"))
+        if not log_files:
+            print(f"No log files found in {log_dir}")
+            return
+        latest_log = log_files[-1]
+        print(f"Tailing latest log: {latest_log.name}")
+        try:
+            # -f follow, -n 20 show last 20 lines
+            subprocess.run(["tail", "-f", "-n", "20", str(latest_log)])
+        except KeyboardInterrupt:
+            print("\nStopped tailing logs.")
 
     # 3. 拦截 CustomProvider 以捕获日志
     try:

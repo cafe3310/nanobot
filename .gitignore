@@ -26,4 +26,5 @@ uv.lock
 
 # --- Cafe Sidecar Private Data ---
 cafeext/.env
+cafeext/logs/
 

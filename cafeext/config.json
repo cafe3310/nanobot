@@ -4,7 +4,7 @@
       "workspace": "/Users/sipan/workspace/nanobot/cafeext/workspace",
       "model": "ling_flash_26_exp_2_a_step180",
       "provider": "custom",
-      "maxTokens": 262144,
+      "maxTokens": 32768,
       "contextWindowTokens": 262144,
       "temperature": 0.8,
       "maxToolIterations": 40,
