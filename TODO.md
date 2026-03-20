@@ -1,0 +1,61 @@
+# nanobot TODO
+
+本项目采用 `doc-todo-log-loop` 流程。以下任务基于 `cafeext/docs/` 中的需求与设计文档梳理。
+
+## 🏗️ 基础设施 (Sidecar 架构) - 已完成
+- [x] 创建 `cafeext` 目录结构，实现代码与数据隔离。 (2026-03-20)
+- [x] 实现 `nanobot-shell.sh` 包装器，支持全局 `nb` 命令。 (2026-03-20)
+- [x] 实现 `launcher.py` 自动注入 `config.json` 和 `workspace` 路径。 (2026-03-20)
+- [x] 完成项目初始部署与虚拟环境配置。 (2026-03-20)
+
+## 🧪 第一阶段：自定义模型与推理调试 (优先级：最高)
+目标：确保 Bot 能够稳定连接自研模型，且推理过程完全透明。
+- [ ] **1.1 初始化私有配置**
+  - 执行 `nb onboard` 在 `cafeext/` 下生成初始配置。
+  - 在 `cafeext/config.json` 中配置 `custom` provider 的 API Key 和 Base URL。
+- [ ] **1.2 验证模型连通性**
+  - 运行 `nb status` 检查 Provider 状态。
+  - 运行 `nb agent -m "hi"` 验证是否能收到正确回复。
+- [ ] **1.3 实现原始推理日志 (Raw Logging)**
+  - 在 `cafeext/py/` 下实现 `litellm` 回调拦截器。
+  - 将原始 JSON 请求与响应实时写入 `cafeext/workspace/logs/inference.log`。
+  - **Milestone**: 开发者能实时审计每一轮对话的 Prompt 和 Completion 原文。
+
+## 💬 第二阶段：Discord 平台适配 (优先级：高)
+目标：将 Bot 接入 Discord 并实现基础互动。
+- [ ] **2.1 Discord Bot 基础接入**
+  - 在 `cafeext/config.json` 中配置 Discord 渠道参数。
+  - 验证 Bot 在 Discord 频道上线。
+- [ ] **2.2 实现 @ 提及响应**
+  - 确保 Bot 能在被 at 时正确回复。
+- [ ] **2.3 实现主动回复逻辑 (定时阅读)**
+  - 利用项目的 `Cron` 或 `Heartbeat` 机制，实现定时阅读频道历史。
+  - **Milestone**: Bot 能在 Discord 中与用户闲聊，并能主动介入话题。
+
+## 🧠 第三阶段：角色灵魂与动态记忆 (优先级：中)
+目标：实现生动的人格表现与长短期记忆闭环。
+- [ ] **3.1 注入数字灵魂 (SOUL.md)**
+  - 基于 `soul.md` 规范，在 `cafeext/workspace/` 下撰写 `SOUL.md`。
+  - 验证 Agent 是否能稳定保持设定的性格和沟通风格。
+- [ ] **3.2 实现状态机机制**
+  - 实现【工作】、【闲聊】、【玩耍】状态的识别与转移。
+- [ ] **3.3 建立主题词库 (Memory Wiki)**
+  - 实现基于对话生成 Wikipedia 风格的主题条目。
+  - 实现第一人称主观记忆的写入逻辑。
+- [ ] **3.4 实现每日日记与记忆固化**
+  - 配置定时任务，让 Bot 每天整理对话记录并更新长期事实。
+  - **Milestone**: 角色表现出生动的人格，并能提起数天前发生过的重要往事。
+
+## 🛠️ 第四阶段：受控功能扩展 (优先级：低)
+目标：在保证安全的前提下，赋予 Bot 操作系统的能力。
+- [ ] **4.1 受控文件读写工具**
+  - 扩展 `WriteFileTool`，增加人工确认环节。
+- [ ] **4.2 受控 Shell 执行工具**
+  - 扩展 `ExecTool`，实现命令前缀白名单与执行前确认。
+- [ ] **4.3 MCP Server 集成**
+  - 接入浏览器控制和无障碍支持等外部工具。
+- [ ] **4.4 Skill 编写引导**
+  - 让 Agent 具备在 `cafeext/workspace/skills/` 下自主编写新技能的能力。
+
+---
+*最后更新：2026-03-20*

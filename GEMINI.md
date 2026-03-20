@@ -11,17 +11,18 @@
 
 ## 重要文档
 
-- [设计：nanobot 基础架构](./cafe_docs/2026-03-18-16-54-设计-nanobot基础架构.md)
-- [需求：模型对接与 Discord 接入](./cafe_docs/2026-03-18-17-58-需求-模型对接与 Discord 接入.md)
-- [需求：Bot 配置计划](./cafe_docs/2026-03-18-19-37-需求-Bot配置计划.md)
+- [设计：nanobot 基础架构](./cafeext/docs/2026-03-18-16-54-设计-nanobot基础架构.md)
+- [需求：模型对接与 Discord 接入](./cafeext/docs/2026-03-18-17-58-需求-模型对接与 Discord 接入.md)
+- [需求：Bot 配置计划](./cafeext/docs/2026-03-18-19-37-需求-Bot配置计划.md)
+- [定制：Sidecar 附加包启动器](./cafeext/docs/2026-03-20-20-12-定制功能-Sidecar附加包启动器.md)
 
 ## Agent Skills
 
 在本项目开发中，我们将深度协同以下 Agent Skills：
 
-`doc-todo-log-loop` -- 我们将以此作为定制开发的唯一管理性 skill。我们用 `cafe_docs` 作为日志目录。
+`doc-todo-log-loop` -- 我们将以此作为定制开发的唯一管理性 skill。我们用 `cafeext/docs` 作为日志目录。
 
-本项目的文档存储在 `cafe_docs` 目录下，遵循 `YYYY-MM-DD-HH-mm-{类别}-{标题}.md` 的命名规范。
+本项目的文档存储在 `cafeext/docs` 目录下，遵循 `YYYY-MM-DD-HH-mm-{类别}-{标题}.md` 的命名规范。
 
 - 新增需求：请用户提出高阶目标，由 Gemini 撰写需求文档并拆分 TODO。
 - 开始开发：由用户指派 TODO 任务后，Gemini 进入「开发与确认」循环。
