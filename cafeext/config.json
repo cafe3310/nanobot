@@ -2,11 +2,11 @@
   "agents": {
     "defaults": {
       "workspace": "/Users/sipan/workspace/nanobot/cafeext/workspace",
-      "model": "anthropic/claude-opus-4-5",
-      "provider": "auto",
-      "maxTokens": 8192,
-      "contextWindowTokens": 65536,
-      "temperature": 0.1,
+      "model": "custom/ling_flash_26_exp_2_a_step180",
+      "provider": "custom",
+      "maxTokens": 262144,
+      "contextWindowTokens": 262144,
+      "temperature": 0.8,
       "maxToolIterations": 40,
       "reasoningEffort": null
     }
@@ -138,7 +138,7 @@
   },
   "providers": {
     "custom": {
-      "apiKey": "",
+      "apiKey": "ENV_VAR_PLACEHOLDER",
       "apiBase": "https://antchat.alipay.com/v1",
       "extraHeaders": null
     },
