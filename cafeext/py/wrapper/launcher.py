@@ -1,11 +1,16 @@
 import sys
 import os
+import json
+import subprocess
 from pathlib import Path
+from functools import wraps
+from datetime import datetime
 
 # 获取项目根目录
 wrapper_dir = Path(__file__).parent.absolute()
-cafext_dir = wrapper_dir.parent.parent.absolute()
-project_root = cafext_dir.parent.absolute()
+cafeext_dir = wrapper_dir.parent.parent.absolute()
+project_root = cafeext_dir.parent.absolute()
+
 
 # 将项目根目录加入 Python 路径
 sys.path.insert(0, str(project_root))
@@ -25,36 +30,97 @@ def load_dotenv(path: Path):
                 key, value = line.split("=", 1)
                 os.environ[key.strip()] = value.strip().strip('"\'')
 
-def main():
-    # 1. 加载 .env 到环境变量
-    load_dotenv(cafext_dir / ".env")
+def setup_injection():
+    """核心注入逻辑：配置、Key 与 日志拦截"""
+    config_path = cafeext_dir / "config.json"
+    workspace_path = cafeext_dir / "workspace"
     
-    # 2. 锁定配置路径
-    config_path = cafext_dir / "config.json"
-    workspace_path = cafext_dir / "workspace"
-    set_config_path(config_path)
-    
-    # 3. [注入逻辑] 
+    # 修正 Typer 显示名称和描述
+    app.info.name = "nb"
+    app.info.help = f"🐈 nanobot [Sidecar Active: {cafeext_dir}]"
+
+    # 1. 拦截配置加载，注入 API Key
     try:
         config = load_config(config_path)
         custom_key = os.environ.get("CUSTOM_API_KEY")
-        
-        # Pydantic v2 使用 snake_case 字段名: api_key
         if custom_key and hasattr(config.providers, 'custom'):
             config.providers.custom.api_key = custom_key
             
-        # 针对 Discord Token 等其它环境变量的扩展注入也可以放在这里
-        # if os.environ.get("DISCORD_TOKEN"):
-        #     config.channels.discord.token = os.environ.get("DISCORD_TOKEN")
-
-        # 猴子补丁拦截 nanobot 的配置加载
         import nanobot.config.loader
         nanobot.config.loader.load_config = lambda *args, **kwargs: config
     except Exception as e:
-        # 失败时不中断，让其尝试使用默认流程
-        print(f"Warning: Sidecar config injection failed: {e}")
+        print(f"Warning: Config injection failed: {e}")
+
+    # 2. 注入 Sidecar 便捷命令 (并分组)
+    panel_name = "Sidecar (Custom)"
+    
+    @app.command(name="config", help="Open private config.json with Zed", rich_help_panel=panel_name)
+    def open_config():
+        print(f"Opening {config_path} with Zed...")
+        subprocess.run(["zed", str(config_path)])
+
+    @app.command(name="workspace", help="Open private workspace in Finder", rich_help_panel=panel_name)
+    def open_workspace():
+        print(f"Opening {workspace_path} in Finder...")
+        subprocess.run(["open", str(workspace_path)])
+
+    # 3. 拦截 CustomProvider 以捕获日志
+    try:
+        from nanobot.providers.custom_provider import CustomProvider
+        from cafeext.py.callbacks.logger import cafe_input_callback, cafe_success_callback, cafe_failure_callback
+        
+        original_chat = CustomProvider.chat
+        
+        @wraps(original_chat)
+        async def patched_chat(self, *args, **kwargs):
+            messages = kwargs.get("messages")
+            if messages is None and len(args) > 0:
+                messages = args[0]
+            tools = kwargs.get("tools")
+            if tools is None and len(args) > 1:
+                tools = args[1]
+
+            log_kwargs = {
+                "model": kwargs.get("model") or getattr(self, "default_model", "unknown"),
+                "api_base": self.api_base,
+                "additional_args": {"complete_input_dict": {"messages": messages, "tools": tools}}
+            }
+            cafe_input_callback(log_kwargs)
+            start_time = datetime.now()
+            try:
+                response = await original_chat(self, *args, **kwargs)
+                cafe_success_callback(log_kwargs, response, start_time, datetime.now())
+                return response
+            except Exception as e:
+                cafe_failure_callback(log_kwargs, e, start_time, datetime.now())
+                raise e
+        CustomProvider.chat = patched_chat
+    except Exception as e:
+        print(f"Warning: CustomProvider log injection failed: {e}")
+
+    # 4. 设置 LiteLLM 日志
+    try:
+        import litellm
+        litellm.log_raw_request_response = True
+        from cafeext.py.callbacks.logger import cafe_input_callback, cafe_success_callback, cafe_failure_callback
+        litellm.input_callback = [cafe_input_callback]
+        litellm.success_callback = [cafe_success_callback]
+        litellm.failure_callback = [cafe_failure_callback]
+    except Exception as e:
+        print(f"Warning: LiteLLM logging setup failed: {e}")
+
+def main():
+    # 1. 加载私有密钥
+    load_dotenv(cafeext_dir / ".env")
+    
+    # 2. 锁定路径
+    set_config_path(cafeext_dir / "config.json")
+    
+    # 3. 注入逻辑 (含新增命令)
+    setup_injection()
 
     # 4. 自动注入参数
+    workspace_path = cafeext_dir / "workspace"
     if len(sys.argv) > 1 and sys.argv[1] == "onboard":
         if "--workspace" not in sys.argv and "-w" not in sys.argv:
             sys.argv.extend(["--workspace", str(workspace_path)])

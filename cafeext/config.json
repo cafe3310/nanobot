@@ -2,7 +2,7 @@
   "agents": {
     "defaults": {
       "workspace": "/Users/sipan/workspace/nanobot/cafeext/workspace",
-      "model": "custom/ling_flash_26_exp_2_a_step180",
+      "model": "ling_flash_26_exp_2_a_step180",
       "provider": "custom",
       "maxTokens": 262144,
       "contextWindowTokens": 262144,
@@ -249,7 +249,7 @@
     }
   },
   "gateway": {
-    "host": "0.0.0.0",
+    "host": "localhost",
     "port": 18790,
     "heartbeat": {
       "enabled": true,
