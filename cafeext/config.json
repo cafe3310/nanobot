@@ -139,7 +139,7 @@
   "providers": {
     "custom": {
       "apiKey": "",
-      "apiBase": null,
+      "apiBase": "https://antchat.alipay.com/v1",
       "extraHeaders": null
     },
     "azureOpenai": {
