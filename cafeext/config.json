@@ -270,7 +270,7 @@
       "timeout": 60,
       "pathAppend": ""
     },
-    "restrictToWorkspace": false,
+    "restrictToWorkspace": true,
     "mcpServers": {}
   }
 }

@@ -31,7 +31,15 @@ def load_dotenv(path: Path):
                 os.environ[key.strip()] = value.strip().strip('"\'')
 
 def setup_injection():
-    """核心注入逻辑：配置、Key 与 日志拦截"""
+    """核心注入逻辑：安全策略、配置、Key 与 日志拦截"""
+    
+    # 0. 强制执行安全策略 (禁用危险工具和技能)
+    try:
+        from cafeext.py.wrapper.security import apply_security_policy
+        apply_security_policy()
+    except Exception as e:
+        print(f"Warning: Security policy application failed: {e}")
+
     config_path = cafeext_dir / "config.json"
     workspace_path = cafeext_dir / "workspace"
     log_dir = cafeext_dir / "logs"
@@ -44,15 +52,14 @@ def setup_injection():
     try:
         config = load_config(config_path)
         
-        # 注入自定义模型 Key (ProviderConfig 是 Pydantic 对象)
+        # 注入自定义模型 Key
         custom_key = os.environ.get("CUSTOM_API_KEY")
         if custom_key and hasattr(config.providers, 'custom'):
             config.providers.custom.api_key = custom_key
             
-        # 注入 Discord Token (channels 子项是字典)
+        # 注入 Discord Token
         discord_token = os.environ.get("DISCORD_TOKEN")
         if discord_token:
-            # 兼容性处理：如果 discord 配置已存在且为字典，则更新它
             discord_cfg = getattr(config.channels, 'discord', None)
             if isinstance(discord_cfg, dict):
                 discord_cfg["token"] = discord_token
