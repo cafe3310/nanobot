@@ -51,7 +51,7 @@ def setup_injection():
     app.info.name = "nb"
     app.info.help = f"🐈 nanobot [Sidecar Active: {cafeext_dir}]"
 
-    # 1. 拦截配置加载，注入 API Key 与 Token
+    # 1. 注入配置与 Key
     try:
         config = load_config(config_path)
         custom_key = os.environ.get("CUSTOM_API_KEY")
@@ -80,9 +80,9 @@ def setup_injection():
         print(f"Opening {workspace_path} in Finder...")
         subprocess.run(["open", str(workspace_path)])
 
-    @app.command(name="logs", help="Tail the latest inference JSONL logs", rich_help_panel=panel_name)
+    @app.command(name="logs", help="Tail the latest inference logs", rich_help_panel=panel_name)
     def tail_logs():
-        log_files = sorted(log_dir.glob("*.jsonl"))
+        log_files = sorted(log_dir.glob("*.log"))
         if not log_files:
             print(f"No log files found in {log_dir}")
             return
@@ -101,7 +101,9 @@ def setup_injection():
             session_path.mkdir(parents=True, exist_ok=True)
         if logs and log_dir.exists():
             print(f"Clearing inference logs in {log_dir}...")
-            for f in log_dir.glob("*.jsonl"):
+            for f in log_dir.glob("*.log"):
+                f.unlink()
+            for f in log_dir.glob("*.jsonl"): # 清理旧格式
                 f.unlink()
         print("Done. Bot memory is now fresh.")
 

@@ -1,134 +1,148 @@
 import os
 import json
 import time
+import re
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, List, Dict
 
-def mask_key(key: str) -> str:
-    """脱敏处理：保留首尾，中间遮掩"""
-    if not key or len(key) <= 8:
-        return "***"
-    return f"{key[:4]}...{key[-4:]}"
+# --- 优雅日志配置 ---
 
-def mask_headers(headers: dict[str, Any]) -> dict[str, Any]:
-    """对敏感 Header 进行脱敏"""
-    masked = dict(headers)
-    for k in masked:
-        if k.lower() in ("authorization", "api-key", "x-api-key"):
-            val = str(masked[k])
-            if "Bearer " in val:
-                masked[k] = f"Bearer {mask_key(val.replace('Bearer ', ''))}"
-            else:
-                masked[k] = mask_key(val)
-    return masked
+EMOJI_MAP = {
+    "request": "🚀 推理请求",
+    "success": "✨ 推理成功",
+    "failure": "❌ 推理失败",
+    "tool_start": "🛠️ 工具执行",
+    "tool_end": "📦 工具响应",
+    "tool_error": "⚠️ 工具报错"
+}
+
+SEPARATOR = "=" * 30
+
+def format_content(content: Any) -> str:
+    """将内容转换为单行字符串，替换换行符为 ↵，消除转义地狱"""
+    if content is None:
+        return ""
+    if not isinstance(content, str):
+        # 仅对非字符串使用 json.dumps，且确保不转义中文
+        content = json.dumps(content, ensure_ascii=False)
+    
+    # 替换物理换行为 ↵ 符号
+    content = content.replace("\n", " ↵ ").replace("\r", "")
+    # 压缩连续空白
+    content = re.sub(r"\s+", " ", content)
+    
+    # 截断过长内容以保持单行性能
+    if len(content) > 4000:
+        return content[:4000] + "... (truncated)"
+    return content.strip()
 
 def get_log_path() -> Path:
-    """生成 yyyy-mm-dd-hh.jsonl 路径"""
+    """获取 .log 日志路径"""
     base_dir = Path(__file__).parent.parent.parent / "logs"
     base_dir.mkdir(parents=True, exist_ok=True)
-    filename = datetime.now().strftime("%Y-%m-%d-%H.jsonl")
+    filename = datetime.now().strftime("%Y-%m-%d-%H.log")
     return base_dir / filename
 
-def write_jsonl(data: dict[str, Any]):
-    """写入文件"""
+def write_pretty_entry(event_type: str, attrs: Dict[str, Any], context: List[Dict[str, str]]):
+    """
+    写入符合规范的视觉化日志
+    """
     path = get_log_path()
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    emoji = EMOJI_MAP.get(event_type, "📝 日志记录")
+    
+    lines = [f"{emoji} [{timestamp}]"]
+    
+    # 1. 写入属性 (attr=val)
+    for k, v in attrs.items():
+        lines.append(f"  {k}={v}")
+    
+    # 2. 写入上下文/参数 (context)
+    if context:
+        lines.append("  context:")
+        for i, item in enumerate(context, 1):
+            role = item.get("role", "info")
+            content = format_content(item.get("content", ""))
+            lines.append(f"    - {i:02d}. {role}: {content}")
+    
+    lines.append(SEPARATOR + "\n")
+    
     with open(path, "a", encoding="utf-8") as f:
-        f.write(json.dumps(data, ensure_ascii=False) + "\n")
+        f.write("\n".join(lines))
+
+# --- 拦截器适配逻辑 ---
 
 def cafe_input_callback(kwargs):
-    """请求拦截 (LiteLLM)"""
+    """处理推理请求日志"""
     try:
         payload = kwargs.get("additional_args", {}).get("complete_input_dict", {})
-        headers = {
-            "model": kwargs.get("model"),
-            "api_base": kwargs.get("api_base")
+        messages = payload.get("messages", [])
+        
+        # 计算统计数据
+        total_chars = sum(len(str(m.get("content", ""))) for m in messages)
+        
+        attrs = {
+            "model": kwargs.get("model", "unknown"),
+            "turns": len(messages),
+            "total_chars": total_chars
         }
-        entry = {
-            "timestamp": datetime.now().isoformat(),
-            "type": "request",
-            "headers": mask_headers(headers),
-            "payload": payload
-        }
-        write_jsonl(entry)
+        
+        # 构建 context 列表
+        context = []
+        for m in messages:
+            context.append({"role": m.get("role"), "content": m.get("content")})
+            
+        write_pretty_entry("request", attrs, context)
     except Exception as e:
         print(f"DEBUG: Input logging failed: {e}")
 
 def cafe_success_callback(kwargs, completion_response, start_time, end_time):
-    """响应拦截 (成功)"""
+    """处理推理成功响应日志"""
     try:
-        logging_obj = kwargs.get("litellm_logging_obj")
-        raw_res = {}
-        raw_req_headers = {}
-        if logging_obj:
-            collected = getattr(logging_obj, "collected_data", {})
-            raw_res = collected.get("raw_response", {})
-            raw_req = collected.get("raw_request", {})
-            if isinstance(raw_req, dict):
-                raw_req_headers = raw_req.get("headers", {})
+        res_content = ""
+        if hasattr(completion_response, "choices") and completion_response.choices:
+            msg = completion_response.choices[0].message
+            res_content = msg.content or (f"Call tools: {msg.tool_calls}" if msg.tool_calls else "")
+        else:
+            res_content = str(completion_response)
 
-        entry = {
-            "timestamp": datetime.now().isoformat(),
-            "type": "response",
-            "status": "success",
-            "request_headers": mask_headers(raw_req_headers),
-            "payload": completion_response.model_dump() if hasattr(completion_response, "model_dump") else str(completion_response),
-            "raw_http_response": raw_res
+        attrs = {
+            "model": kwargs.get("model", "unknown"),
+            "duration": f"{(end_time - start_time).total_seconds():.2f}s"
         }
-        write_jsonl(entry)
+        
+        context = [{"role": "assistant", "content": res_content}]
+        write_pretty_entry("success", attrs, context)
     except Exception as e:
         print(f"DEBUG: Success logging failed: {e}")
 
 def cafe_failure_callback(kwargs, exception, start_time, end_time):
-    """响应拦截 (失败)"""
+    """处理推理失败响应日志"""
     try:
-        logging_obj = kwargs.get("litellm_logging_obj")
-        raw_res = {}
-        raw_req_headers = {}
-        if logging_obj:
-            collected = getattr(logging_obj, "collected_data", {})
-            raw_res = collected.get("raw_response", {})
-            raw_req = collected.get("raw_request", {})
-            if isinstance(raw_req, dict):
-                raw_req_headers = raw_req.get("headers", {})
-
-        entry = {
-            "timestamp": datetime.now().isoformat(),
-            "type": "response",
-            "status": "failure",
-            "error": str(exception),
-            "request_headers": mask_headers(raw_req_headers),
-            "raw_http_response": raw_res
+        attrs = {
+            "model": kwargs.get("model", "unknown"),
+            "duration": f"{(end_time - start_time).total_seconds():.2f}s"
         }
-        write_jsonl(entry)
+        context = [{"role": "error", "content": str(exception)}]
+        write_pretty_entry("failure", attrs, context)
     except Exception as e:
         print(f"DEBUG: Failure logging failed: {e}")
 
-# --- 工具执行审计逻辑 ---
-
 def cafe_tool_start_log(name: str, params: dict[str, Any]):
-    """记录工具开始执行"""
-    try:
-        entry = {
-            "timestamp": datetime.now().isoformat(),
-            "type": "tool_executing",
-            "tool": name,
-            "parameters": params
-        }
-        write_jsonl(entry)
-    except Exception as e:
-        print(f"DEBUG: Tool start logging failed: {e}")
+    """处理工具执行开始日志"""
+    attrs = {"tool": name}
+    context = [{"role": "parameters", "content": params}]
+    write_pretty_entry("tool_start", attrs, context)
 
 def cafe_tool_end_log(name: str, result: str, duration_ms: float):
-    """记录工具执行完毕"""
-    try:
-        entry = {
-            "timestamp": datetime.now().isoformat(),
-            "type": "tool_response",
-            "tool": name,
-            "duration_ms": round(duration_ms, 2),
-            "result": result[:2000] + "..." if len(result) > 2000 else result # 截断超长结果
-        }
-        write_jsonl(entry)
-    except Exception as e:
-        print(f"DEBUG: Tool end logging failed: {e}")
+    """处理工具执行响应日志"""
+    # 根据结果是否包含 Error 判定类型
+    event_type = "tool_error" if "Error" in result or "Exception" in result else "tool_end"
+    
+    attrs = {
+        "tool": name,
+        "duration": f"{duration_ms:.1f}ms"
+    }
+    context = [{"role": "result", "content": result}]
+    write_pretty_entry(event_type, attrs, context)
