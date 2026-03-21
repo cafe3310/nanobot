@@ -25,7 +25,6 @@ def mask_headers(headers: dict[str, Any]) -> dict[str, Any]:
 
 def get_log_path() -> Path:
     """生成 yyyy-mm-dd-hh.jsonl 路径"""
-    # 路径结构：cafeext/logs/yyyy-mm-dd-hh.jsonl
     base_dir = Path(__file__).parent.parent.parent / "logs"
     base_dir.mkdir(parents=True, exist_ok=True)
     filename = datetime.now().strftime("%Y-%m-%d-%H.jsonl")
@@ -38,18 +37,13 @@ def write_jsonl(data: dict[str, Any]):
         f.write(json.dumps(data, ensure_ascii=False) + "\n")
 
 def cafe_input_callback(kwargs):
-    """请求拦截"""
+    """请求拦截 (LiteLLM)"""
     try:
-        # 提取 LiteLLM 组装后的原始输入
         payload = kwargs.get("additional_args", {}).get("complete_input_dict", {})
-        
-        # 模拟提取 Header (LiteLLM 回调中获取 headers 的方式因 provider 而异)
-        # 这里尝试从 kwargs 中寻找可能的配置信息
         headers = {
             "model": kwargs.get("model"),
             "api_base": kwargs.get("api_base")
         }
-        
         entry = {
             "timestamp": datetime.now().isoformat(),
             "type": "request",
@@ -66,7 +60,6 @@ def cafe_success_callback(kwargs, completion_response, start_time, end_time):
         logging_obj = kwargs.get("litellm_logging_obj")
         raw_res = {}
         raw_req_headers = {}
-        
         if logging_obj:
             collected = getattr(logging_obj, "collected_data", {})
             raw_res = collected.get("raw_response", {})
@@ -92,7 +85,6 @@ def cafe_failure_callback(kwargs, exception, start_time, end_time):
         logging_obj = kwargs.get("litellm_logging_obj")
         raw_res = {}
         raw_req_headers = {}
-        
         if logging_obj:
             collected = getattr(logging_obj, "collected_data", {})
             raw_res = collected.get("raw_response", {})
@@ -111,3 +103,32 @@ def cafe_failure_callback(kwargs, exception, start_time, end_time):
         write_jsonl(entry)
     except Exception as e:
         print(f"DEBUG: Failure logging failed: {e}")
+
+# --- 工具执行审计逻辑 ---
+
+def cafe_tool_start_log(name: str, params: dict[str, Any]):
+    """记录工具开始执行"""
+    try:
+        entry = {
+            "timestamp": datetime.now().isoformat(),
+            "type": "tool_executing",
+            "tool": name,
+            "parameters": params
+        }
+        write_jsonl(entry)
+    except Exception as e:
+        print(f"DEBUG: Tool start logging failed: {e}")
+
+def cafe_tool_end_log(name: str, result: str, duration_ms: float):
+    """记录工具执行完毕"""
+    try:
+        entry = {
+            "timestamp": datetime.now().isoformat(),
+            "type": "tool_response",
+            "tool": name,
+            "duration_ms": round(duration_ms, 2),
+            "result": result[:2000] + "..." if len(result) > 2000 else result # 截断超长结果
+        }
+        write_jsonl(entry)
+    except Exception as e:
+        print(f"DEBUG: Tool end logging failed: {e}")

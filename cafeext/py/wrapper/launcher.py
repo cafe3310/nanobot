@@ -16,6 +16,15 @@ project_root = cafeext_dir.parent.absolute()
 # 将项目根目录加入 Python 路径
 sys.path.insert(0, str(project_root))
 
+# --- [极早期的安全补丁] ---
+# 必须在从 nanobot 导入任何内容之前执行，以防止原版类被缓存
+try:
+    from cafeext.py.wrapper.security import apply_security_policy
+    apply_security_policy()
+except Exception as e:
+    print(f"Critical Warning: Security policy injection failed early: {e}")
+# -------------------------
+
 from nanobot.config.loader import set_config_path, load_config
 from nanobot.cli.commands import app
 
@@ -32,15 +41,7 @@ def load_dotenv(path: Path):
                 os.environ[key.strip()] = value.strip().strip('"\'')
 
 def setup_injection():
-    """核心注入逻辑：安全策略、配置、Key 与 日志拦截"""
-    
-    # 0. 强制执行安全策略 (禁用危险工具和技能)
-    try:
-        from cafeext.py.wrapper.security import apply_security_policy
-        apply_security_policy()
-    except Exception as e:
-        print(f"Warning: Security policy application failed: {e}")
-
+    """核心注入逻辑：配置、Key 与 日志拦截"""
     config_path = cafeext_dir / "config.json"
     workspace_path = cafeext_dir / "workspace"
     session_path = workspace_path / "sessions"
