@@ -14,7 +14,9 @@ EMOJI_MAP = {
     "failure": "❌ 推理失败",
     "tool_start": "🛠️ 工具执行",
     "tool_end": "📦 工具响应",
-    "tool_error": "⚠️ 工具报错"
+    "tool_error": "⚠️ 工具报错",
+    "inbound": "📥 收到消息",
+    "outbound": "📤 发送回复"
 }
 
 SEPARATOR = "=" * 30
@@ -24,7 +26,6 @@ def format_content(content: Any) -> str:
     if content is None:
         return ""
     if not isinstance(content, str):
-        # 仅对非字符串使用 json.dumps，且确保不转义中文
         content = json.dumps(content, ensure_ascii=False)
     
     # 替换物理换行为 ↵ 符号
@@ -78,8 +79,6 @@ def cafe_input_callback(kwargs):
     try:
         payload = kwargs.get("additional_args", {}).get("complete_input_dict", {})
         messages = payload.get("messages", [])
-        
-        # 计算统计数据
         total_chars = sum(len(str(m.get("content", ""))) for m in messages)
         
         attrs = {
@@ -87,12 +86,7 @@ def cafe_input_callback(kwargs):
             "turns": len(messages),
             "total_chars": total_chars
         }
-        
-        # 构建 context 列表
-        context = []
-        for m in messages:
-            context.append({"role": m.get("role"), "content": m.get("content")})
-            
+        context = [{"role": m.get("role"), "content": m.get("content")} for m in messages]
         write_pretty_entry("request", attrs, context)
     except Exception as e:
         print(f"DEBUG: Input logging failed: {e}")
@@ -111,7 +105,6 @@ def cafe_success_callback(kwargs, completion_response, start_time, end_time):
             "model": kwargs.get("model", "unknown"),
             "duration": f"{(end_time - start_time).total_seconds():.2f}s"
         }
-        
         context = [{"role": "assistant", "content": res_content}]
         write_pretty_entry("success", attrs, context)
     except Exception as e:
@@ -137,12 +130,21 @@ def cafe_tool_start_log(name: str, params: dict[str, Any]):
 
 def cafe_tool_end_log(name: str, result: str, duration_ms: float):
     """处理工具执行响应日志"""
-    # 根据结果是否包含 Error 判定类型
     event_type = "tool_error" if "Error" in result or "Exception" in result else "tool_end"
-    
-    attrs = {
-        "tool": name,
-        "duration": f"{duration_ms:.1f}ms"
-    }
+    attrs = {"tool": name, "duration": f"{duration_ms:.1f}ms"}
     context = [{"role": "result", "content": result}]
     write_pretty_entry(event_type, attrs, context)
+
+def cafe_message_log(direction: str, channel: str, user_or_chat: str, content: str):
+    """
+    处理消息进出日志
+    direction: 'inbound' 或 'outbound'
+    """
+    role_map = {"inbound": "user", "outbound": "assistant"}
+    attrs = {
+        "channel": channel,
+        "target": user_or_chat if direction == "outbound" else "bot",
+        "sender": user_or_chat if direction == "inbound" else "bot"
+    }
+    context = [{"role": role_map.get(direction, "info"), "content": content}]
+    write_pretty_entry(direction, attrs, context)

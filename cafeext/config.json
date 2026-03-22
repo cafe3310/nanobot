@@ -26,7 +26,7 @@
       "allowFrom": ["1408100579741405255"],
       "gatewayUrl": "wss://gateway.discord.gg/?v=10&encoding=json",
       "intents": 37377,
-      "groupPolicy": "open"
+      "groupPolicy": "mention"
     },
     "email": {
       "enabled": false,

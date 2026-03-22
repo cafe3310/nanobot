@@ -11,14 +11,14 @@ DISABLED_TOOLS = ["exec", "spawn"]
 def apply_security_policy():
     """通过全局 Monkey Patch 强制执行安全策略与审计逻辑。"""
     try:
-        # 1. 拦截 ToolRegistry (必须在任何 AgentLoop 实例创建前完成)
-        # 我们直接修改模块中的类定义，确保所有 import 都能看到补丁
+        from cafeext.py.callbacks.logger import (
+            cafe_tool_start_log, cafe_tool_end_log, cafe_message_log
+        )
+
+        # 1. 拦截 ToolRegistry (工具审计)
         import nanobot.agent.tools.registry
-        from cafeext.py.callbacks.logger import cafe_tool_start_log, cafe_tool_end_log
-        
         ToolRegistry = nanobot.agent.tools.registry.ToolRegistry
         
-        # 拦截注册: 强制禁用黑名单工具
         original_register = ToolRegistry.register
         def patched_register(self, tool):
             if tool.name in DISABLED_TOOLS:
@@ -26,29 +26,40 @@ def apply_security_policy():
             return original_register(self, tool)
         ToolRegistry.register = patched_register
 
-        # 拦截执行: 记录工具调用开始与结束
         original_execute = ToolRegistry.execute
         async def patched_execute(self, name, params):
-            # 1. 记录工具开始执行
             cafe_tool_start_log(name, params)
-            
             start_t = time.perf_counter()
             try:
-                # 2. 执行原始逻辑
                 result = await original_execute(self, name, params)
                 duration = (time.perf_counter() - start_t) * 1000
-                
-                # 3. 记录工具执行完毕与结果
                 cafe_tool_end_log(name, result, duration)
                 return result
             except Exception as e:
                 duration = (time.perf_counter() - start_t) * 1000
                 cafe_tool_end_log(name, f"Exception: {str(e)}", duration)
                 raise e
-
         ToolRegistry.execute = patched_execute
 
-        # 2. 深度拦截 Agent Skills (SkillsLoader)
+        # 2. 拦截 MessageBus (消息进出审计)
+        import nanobot.bus.queue
+        MessageBus = nanobot.bus.queue.MessageBus
+
+        original_publish_inbound = MessageBus.publish_inbound
+        async def patched_publish_inbound(self, msg):
+            # 记录收到消息
+            cafe_message_log("inbound", msg.channel, msg.sender_id, msg.content)
+            return await original_publish_inbound(self, msg)
+        MessageBus.publish_inbound = patched_publish_inbound
+
+        original_publish_outbound = MessageBus.publish_outbound
+        async def patched_publish_outbound(self, msg):
+            # 记录发送回复
+            cafe_message_log("outbound", msg.channel, msg.chat_id, msg.content)
+            return await original_publish_outbound(self, msg)
+        MessageBus.publish_outbound = patched_publish_outbound
+
+        # 3. 拦截 SkillsLoader (技能安全)
         import nanobot.agent.skills
         SkillsLoader = nanobot.agent.skills.SkillsLoader
         
