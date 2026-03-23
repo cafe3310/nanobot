@@ -6,56 +6,63 @@ import json
 def ask_macos_permission(name, params):
     """
     通过 AppleScript 弹出 macOS 原生对话框。
-    返回: True (允许), False (拒绝), None (系统错误/无法弹出)
+    采用位置参数传递文本，彻底解决转义字符导致的弹窗失败问题。
     """
     try:
-        # 1. 参数美化
+        # 1. 准备参数预览
         try:
             params_json = json.dumps(params, ensure_ascii=False, indent=1)
-            if len(params_json) > 400:
-                params_json = params_json[:400] + "..."
+            # 限制长度，防止对话框撑爆屏幕
+            if len(params_json) > 1000:
+                params_json = params_json[:1000] + "\n... (truncated)"
         except:
             params_json = str(params)
         
-        # 2. 构造文本（针对 AppleScript 进行严格转义）
-        text = f"是否允许 nanobot 执行工具：{name}？\n\n参数预览：\n{params_json}"
-        
-        # 核心转义逻辑：
-        # a. 将双引号转义为 \"
-        # b. 将换行符转义为 \n 字符串
-        safe_text = text.replace('"', '\\"').replace('\n', '\\n').replace('\r', '')
+        # 2. 构造文本内容
+        display_text = f"是否允许 nanobot 执行工具：{name}？\n\n参数预览：\n{params_json}"
         title = "nanobot 🐈 安全确认"
 
-        # 3. 核心脚本：
-        # 使用 -e 指令执行单行脚本，减少多行带来的解析风险
-        script = (
-            f'tell application (path to frontmost application as text) to ' 
-            f'display dialog "{safe_text}" ' 
-            f'with title "{title}" ' 
-            f'buttons {{"Deny", "Allow"}} ' 
-            f'default button "Deny" ' 
-            f'with icon note'
-        )
+        # 3. 编写 AppleScript
+        # 使用 'on run argv' 接收外部参数，避免在 script 字符串中进行复杂的插值和转义
+        script = '''
+        on run argv
+            set display_text to item 1 of argv
+            set dialog_title to item 2 of argv
+            
+            tell application (path to frontmost application as text)
+                try
+                    set res to display dialog display_text with title dialog_title buttons {"Deny", "Allow"} default button "Deny" with icon note
+                    return button returned of res
+                on error
+                    return "Error"
+                end try
+            end tell
+        end run
+        '''
         
-        # 4. 执行
+        # 4. 执行 osascript 并通过 argv 传递文本
         result = subprocess.run(
-            ["osascript", "-e", script],
+            ["osascript", "-e", script, display_text, title],
             capture_output=True,
             text=True,
-            timeout=60
+            timeout=120 # 调大超时时间，给用户充足的思考时间
         )
         
         if result.returncode != 0:
-            # 可能是权限问题或用户取消
+            # 执行失败（通常是权限问题）
             return None
             
-        # AppleScript 返回格式通常为 "button returned:Allow"
-        if "Allow" in result.stdout:
+        stdout = result.stdout.strip()
+        if "Allow" in stdout:
             return True
-        if "Deny" in result.stdout:
+        if "Deny" in stdout:
             return False
             
         return None
         
-    except Exception:
+    except subprocess.TimeoutExpired:
+        print("🕒 macOS Dialog timed out.")
+        return None
+    except Exception as e:
+        # print(f"DEBUG: Notification error: {e}")
         return None
