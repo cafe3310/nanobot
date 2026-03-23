@@ -24,7 +24,7 @@ DOTENV_PATH = CAFEEXT_DIR / ".env"
 DISABLED_SKILLS = ["clawhub"]
 
 # 强制禁用的核心工具 (Tool Name)
-DISABLED_TOOLS = ["exec", "spawn"]
+DISABLED_TOOLS = []
 
 # --- 3. 优雅日志表现 (Elegant Logging) ---
 
