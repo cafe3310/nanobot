@@ -1,0 +1,1 @@
+--- START VAULT-MEM-TOOLS ---\nFixed core data for TOOLS.md\n--- END VAULT-MEM-TOOLS ---

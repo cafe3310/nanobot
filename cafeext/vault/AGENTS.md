@@ -1,1 +1,1 @@
-Fixed core personality. [VAULT-MEM-AGENTS]
+--- START VAULT-MEM-AGENTS ---\nFixed core data for AGENTS.md\n--- END VAULT-MEM-AGENTS ---

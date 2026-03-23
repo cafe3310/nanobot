@@ -1,8 +1,8 @@
+[WORKSPACE-MEM-USER-START]
+
 # User Profile
 
 Information about the user to help personalize interactions.
-
-Temporary user settings. [WORKSPACE-MEM-USER]
 
 ## Basic Information
 
@@ -49,3 +49,5 @@ Temporary user settings. [WORKSPACE-MEM-USER]
 ---
 
 *Edit this file to customize nanobot's behavior for your needs.*
+
+[WORKSPACE-MEM-USER-END]

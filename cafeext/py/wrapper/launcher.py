@@ -118,7 +118,7 @@ def setup_injection():
         
         # 检查金库核心文件
         vault_files = [
-            "AGENTS.md", "SOUL.md", "USER.md", "TOOLS.md",
+            "AGENTS.md", "HEARTBEAT.md", "SOUL.md", "USER.md", "TOOLS.md",
             "memory/MEMORY.md", "memory/HISTORY.md", "mcp.json"
         ]
         for f in vault_files:

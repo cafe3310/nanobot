@@ -1,1 +1,1 @@
-Immutable soul values. [VAULT-MEM-SOUL]
+--- START VAULT-MEM-SOUL ---\nFixed core data for SOUL.md\n--- END VAULT-MEM-SOUL ---

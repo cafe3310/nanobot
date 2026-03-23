@@ -1,8 +1,8 @@
+[WORKSPACE-MEM-MEMORY-START]
+
 # Long-term Memory
 
 This file stores important information that should persist across sessions.
-
-Secondary workspace facts. [WORKSPACE-MEM-MEMORY]
 
 ## User Information
 
@@ -23,4 +23,6 @@ Secondary workspace facts. [WORKSPACE-MEM-MEMORY]
 ---
 
 *This file is automatically updated by nanobot when important information should be remembered.*
-Shared workspace experience. [WORKSPACE-MEM-BOT]
+Shared workspace experience. 
+
+[WORKSPACE-MEM-MEMORY-END]

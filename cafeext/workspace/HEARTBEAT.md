@@ -1,3 +1,5 @@
+[WORKSPACE-MEM-HEARTBEAT-START]
+
 # Heartbeat Tasks
 
 This file is checked every 30 minutes by your nanobot agent.
@@ -14,3 +16,4 @@ If this file has no tasks (only headers and comments), the agent will skip the h
 
 <!-- Move completed tasks here or delete them -->
 
+[WORKSPACE-MEM-HEARTBEAT-END]

@@ -1,1 +1,1 @@
-Core factual memory. [VAULT-MEM-MEMORY]
+--- START VAULT-MEM-MEMORY ---\nFixed core long-term facts.\n--- END VAULT-MEM-MEMORY ---
