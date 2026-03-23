@@ -75,36 +75,7 @@ def apply_context_patch():
             return "# Memory\n\n" + "\n\n".join(all_memories) if all_memories else ""
         MemoryStore.get_memory_context = patched_get_memory_context
 
-        # 3. 拦截 SkillsLoader (金库技能优先)
-        import nanobot.agent.skills
-        SkillsLoader = nanobot.agent.skills.SkillsLoader
-        current_list_skills = SkillsLoader.list_skills
-        def vault_list_skills(self, *args, **kwargs):
-            skills = current_list_skills(self, *args, **kwargs)
-            vault_skills_dir = VAULT_DIR / "skills"
-            if vault_skills_dir.exists():
-                for skill_dir in vault_skills_dir.iterdir():
-                    if skill_dir.is_dir() and (skill_dir / "SKILL.md").exists():
-                        existing = next((s for s in skills if s["name"] == skill_dir.name), None)
-                        if existing:
-                            existing["path"] = str(skill_dir / "SKILL.md")
-                            existing["source"] = "vault (override)"
-                        else:
-                            skills.append({"name": skill_dir.name, "path": str(skill_dir / "SKILL.md"), "source": "vault"})
-            return skills
-        SkillsLoader.list_skills = vault_list_skills
-
-        # 补丁 load_skill 支持金库技能读取
-        original_load_skill = SkillsLoader.load_skill
-        def patched_load_skill(self, name: str):
-            content = original_load_skill(self, name)
-            if content:
-                return content
-            vault_skill = VAULT_DIR / "skills" / name / "SKILL.md"
-            if vault_skill.exists():
-                return vault_skill.read_text(encoding="utf-8")
-            return None
-        SkillsLoader.load_skill = patched_load_skill
+        # (原 SkillsLoader 补丁已迁移至 skill_patch.py)
         
     except Exception as e:
         print(f"Warning: Failed to apply fully aligned context patch: {e}")
