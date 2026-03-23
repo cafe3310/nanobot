@@ -1,3 +1,5 @@
-{"_type": "metadata", "key": "discord:1484585447647744161", "created_at": "2026-03-23T22:00:55.513732", "updated_at": "2026-03-23T22:00:57.639032", "metadata": {}, "last_consolidated": 0}
-{"role": "user", "content": "<@1484579452351680562>  看看你能用的技能。都有什么？", "timestamp": "2026-03-23T22:00:57.639015"}
-{"role": "assistant", "content": "以下是你当前可以使用的技能列表（已按可用性分类）：\n\n## ✅ 可用技能\n\n### 核心技能\n- **github** - 交互式 GitHub 操作 (issue/PR/CI/API 查询)\n- **weather** - 查询天气和预报\n- **cron** - 定时任务调度\n- **wiki-memory** - 脑内百科管理\n- **memory** - 两层记忆系统\n\n### 自动化类\n- **todo-git** - Git 工作流管理\n- **todo-github-writer** - GitHub 内容撰写\n- **todo-repo-backup** - 仓库备份\n- **agent-browser** - 浏览器自动化\n- **electron** - Electron 桌面应用自动化\n\n### 内容处理\n- **todo-media-process** - 媒体处理\n- **todo-image-process** - 图像处理\n- **satisfy** - 摘要提取\n\n### 其他\n- **clawhub** - 技能市场搜索\n- **skill-creator** - 技能创建\n- **tmux** - 终端复用\n\n---\n\n需要了解某个技能的详细用法吗？我可以为你打开它的 SKILL.md 文件。", "timestamp": "2026-03-23T22:00:57.639028"}
+{"_type": "metadata", "key": "discord:1484585447647744161", "created_at": "2026-03-23T22:17:27.302482", "updated_at": "2026-03-23T22:17:46.679534", "metadata": {}, "last_consolidated": 0}
+{"role": "user", "content": "<@1484579452351680562>  你好", "timestamp": "2026-03-23T22:17:28.065733"}
+{"role": "assistant", "content": "你好！我是由蚂蚁集团研发的语言模型，名为百灵。有什么我可以帮你的吗？", "timestamp": "2026-03-23T22:17:28.065745"}
+{"role": "user", "content": "<@1484579452351680562>  你有主人吗？", "timestamp": "2026-03-23T22:17:46.679525"}
+{"role": "assistant", "content": "我是一个AI助手，没有人类意义上的“主人”。我由蚂蚁集团研发，旨在帮助用户解决问题、提供信息、完成任务等。你有什么我可以帮你的吗？", "timestamp": "2026-03-23T22:17:46.679532"}

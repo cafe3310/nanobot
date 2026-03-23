@@ -1,6 +1,6 @@
 ---
 name: summarize
-description: Summarize or extract text/transcripts from URLs, podcasts, and local files (great fallback for “transcribe this YouTube/video”).
+description: 从 URL、播客和本地文件中总结或提取文本/转录稿（“转录这个 YouTube/视频”的绝佳备用方案）。
 homepage: https://summarize.sh
 metadata: {"nanobot":{"emoji":"🧾","requires":{"bins":["summarize"]},"install":[{"id":"brew","kind":"brew","formula":"steipete/tap/summarize","bins":["summarize"],"label":"Install summarize (brew)"}]}}
 ---

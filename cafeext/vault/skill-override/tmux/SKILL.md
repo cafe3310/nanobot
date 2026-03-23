@@ -1,6 +1,6 @@
 ---
 name: tmux
-description: Remote-control tmux sessions for interactive CLIs by sending keystrokes and scraping pane output.
+description: 通过发送击键和抓取面板输出来远程控制 tmux 会话，以实现交互式 CLI 操作。
 metadata: {"nanobot":{"emoji":"🧵","os":["darwin","linux"],"requires":{"bins":["tmux"]}}}
 ---
 
