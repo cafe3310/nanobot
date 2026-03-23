@@ -77,9 +77,8 @@ def setup_injection():
             with open(vault_mcp_path, "r", encoding="utf-8") as f:
                 vault_mcp = json.load(f)
                 if isinstance(vault_mcp, dict):
-                    if getattr(config, "mcpServers", None) is None:
-                        config.mcpServers = {}
-                    config.mcpServers.update(vault_mcp)
+                    for name, server_data in vault_mcp.items():
+                        config.tools.mcp_servers[name] = server_data
 
         import nanobot.config.loader
         nanobot.config.loader.load_config = lambda *args, **kwargs: config
