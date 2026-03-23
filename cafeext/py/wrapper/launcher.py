@@ -27,6 +27,9 @@ try:
 
     from cafeext.py.wrapper.skill_patch import apply_skill_patch
     apply_skill_patch()
+
+    from cafeext.py.wrapper.prompt_patch import apply_prompt_patch
+    apply_prompt_patch()
 except Exception as e:
     print(f"Critical Warning: Security policy injection failed early: {e}")
 # -------------------------

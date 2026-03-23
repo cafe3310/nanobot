@@ -17,14 +17,7 @@ def apply_context_patch():
         # 显式扩展引导文件清单
         ContextBuilder.BOOTSTRAP_FILES = ["AGENTS.md", "HEARTBEAT.md", "SOUL.md", "USER.md", "TOOLS.md"]
         
-        # 补强 Identity：告知 Agent 固定记忆路径
-        original_get_identity = ContextBuilder._get_identity
-        def patched_get_identity(self):
-            identity = original_get_identity(self)
-            vault_path = str(VAULT_DIR.resolve())
-            vault_info = f"- Fixed memory & skills (Read-only): {vault_path}\n"
-            return identity.replace("## Workspace", f"## Workspace\n{vault_info}")
-        ContextBuilder._get_identity = patched_get_identity
+        # (原 Identity 补丁已迁移至 prompt_patch.py)
         
         def patched_load_bootstrap(self):
             parts = []
