@@ -117,13 +117,16 @@ def setup_injection():
         if not VAULT_DIR.exists(): missing.append(("dir", VAULT_DIR))
         
         # 检查金库核心文件
-        vault_files = ["SOUL.md", "USER.md", "BOT.md", "AGENTS.md", "MEMORY.md", "mcp.json"]
+        vault_files = [
+            "AGENTS.md", "SOUL.md", "USER.md", "TOOLS.md",
+            "memory/MEMORY.md", "memory/HISTORY.md", "mcp.json"
+        ]
         for f in vault_files:
             p = VAULT_DIR / f
             if not p.exists(): missing.append(("file", p))
             
         # 检查工作区目录
-        for d in ["sessions", "skills"]:
+        for d in ["sessions", "skills", "memory"]:
             p = WORKSPACE_DIR / d
             if not p.exists(): missing.append(("dir", p))
 

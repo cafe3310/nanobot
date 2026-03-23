@@ -2,6 +2,8 @@
 
 This file stores important information that should persist across sessions.
 
+Secondary workspace facts. [WORKSPACE-MEM-MEMORY]
+
 ## User Information
 
 (Important facts about the user)
@@ -21,3 +23,4 @@ This file stores important information that should persist across sessions.
 ---
 
 *This file is automatically updated by nanobot when important information should be remembered.*
+Shared workspace experience. [WORKSPACE-MEM-BOT]

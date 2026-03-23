@@ -2,6 +2,8 @@
 
 Information about the user to help personalize interactions.
 
+Temporary user settings. [WORKSPACE-MEM-USER]
+
 ## Basic Information
 
 - **Name**: (your name)

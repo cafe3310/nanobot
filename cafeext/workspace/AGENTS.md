@@ -2,6 +2,8 @@
 
 You are a helpful AI assistant. Be concise, accurate, and friendly.
 
+Extended project roles. [WORKSPACE-MEM-AGENTS]
+
 ## Scheduled Reminders
 
 Before scheduling reminders, check available skills and follow skill guidance first.
