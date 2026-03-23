@@ -7,6 +7,7 @@ import sys
 import json
 import termios
 import tty
+from pathlib import Path
 from datetime import datetime
 
 # 从中央配置中心导入禁用列表
@@ -46,6 +47,23 @@ def apply_security_policy():
             # A. 审计日志 (开始)
             cafe_tool_start_log(name, params)
             
+            # 特殊逻辑：允许只读工具访问整个 Vault 目录 (只读穿透)
+            if name in ["read_file", "list_dir", "list_directory"]:
+                from cafeext.py.wrapper.config import VAULT_DIR
+                path_val = params.get("path") or params.get("dir_path", "")
+                if path_val and str(VAULT_DIR.resolve()) in str(Path(path_val).resolve()):
+                    tool_instance = self.get(name)
+                    if tool_instance:
+                        # 注入 Vault 目录到工具的额外允许清单中
+                        old_extra = getattr(tool_instance, "_extra_allowed_dirs", [])
+                        tool_instance._extra_allowed_dirs = (old_extra or []) + [VAULT_DIR.resolve()]
+                        try:
+                            result = await tool_instance.execute(**params)
+                            cafe_tool_end_log(name, result, 0)
+                            return result
+                        finally:
+                            tool_instance._extra_allowed_dirs = old_extra
+
             # B. 多维人工确认 (终端 + macOS 对话框)
             allowed = True
             if name not in ["message"]:
