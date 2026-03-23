@@ -6,26 +6,17 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, List, Dict
 
-# --- 优雅日志配置 ---
-
-EMOJI_MAP = {
-    "request": "🚀 推理请求",
-    "success": "✨ 推理成功",
-    "failure": "❌ 推理失败",
-    "tool_start": "🛠️ 工具执行",
-    "tool_end": "📦 工具响应",
-    "tool_error": "⚠️ 工具报错",
-    "inbound": "📥 收到消息",
-    "outbound": "📤 发送回复"
-}
-
-SEPARATOR = "=" * 30
+# 从中央配置中心导入
+from cafeext.py.wrapper.config import (
+    EMOJI_MAP, LOG_SEPARATOR, LOG_SUFFIX, LOG_TRUNCATE_LIMIT, LOG_DIR
+)
 
 def format_content(content: Any) -> str:
     """将内容转换为单行字符串，替换换行符为 ↵，消除转义地狱"""
     if content is None:
         return ""
     if not isinstance(content, str):
+        # 仅对非字符串使用 json.dumps，且确保不转义中文
         content = json.dumps(content, ensure_ascii=False)
     
     # 替换物理换行为 ↵ 符号
@@ -33,17 +24,16 @@ def format_content(content: Any) -> str:
     # 压缩连续空白
     content = re.sub(r"\s+", " ", content)
     
-    # 截断过长内容以保持单行性能
-    if len(content) > 4000:
-        return content[:4000] + "... (truncated)"
+    # 使用配置的阈值进行截断
+    if len(content) > LOG_TRUNCATE_LIMIT:
+        return content[:LOG_TRUNCATE_LIMIT] + "... (truncated)"
     return content.strip()
 
 def get_log_path() -> Path:
-    """获取 .log 日志路径"""
-    base_dir = Path(__file__).parent.parent.parent / "logs"
-    base_dir.mkdir(parents=True, exist_ok=True)
-    filename = datetime.now().strftime("%Y-%m-%d-%H.log")
-    return base_dir / filename
+    """获取符合配置后缀的日志路径"""
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
+    filename = datetime.now().strftime("%Y-%m-%d-%H") + LOG_SUFFIX
+    return LOG_DIR / filename
 
 def write_pretty_entry(event_type: str, attrs: Dict[str, Any], context: List[Dict[str, str]]):
     """
@@ -67,7 +57,7 @@ def write_pretty_entry(event_type: str, attrs: Dict[str, Any], context: List[Dic
             content = format_content(item.get("content", ""))
             lines.append(f"    - {i:02d}. {role}: {content}")
     
-    lines.append(SEPARATOR + "\n")
+    lines.append(LOG_SEPARATOR + "\n")
     
     with open(path, "a", encoding="utf-8") as f:
         f.write("\n".join(lines))
@@ -136,10 +126,7 @@ def cafe_tool_end_log(name: str, result: str, duration_ms: float):
     write_pretty_entry(event_type, attrs, context)
 
 def cafe_message_log(direction: str, channel: str, user_or_chat: str, content: str):
-    """
-    处理消息进出日志
-    direction: 'inbound' 或 'outbound'
-    """
+    """处理消息进出日志"""
     role_map = {"inbound": "user", "outbound": "assistant"}
     attrs = {
         "channel": channel,
