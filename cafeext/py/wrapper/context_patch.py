@@ -93,6 +93,18 @@ def apply_context_patch():
                             skills.append({"name": skill_dir.name, "path": str(skill_dir / "SKILL.md"), "source": "vault"})
             return skills
         SkillsLoader.list_skills = vault_list_skills
+
+        # 补丁 load_skill 支持金库技能读取
+        original_load_skill = SkillsLoader.load_skill
+        def patched_load_skill(self, name: str):
+            content = original_load_skill(self, name)
+            if content:
+                return content
+            vault_skill = VAULT_DIR / "skills" / name / "SKILL.md"
+            if vault_skill.exists():
+                return vault_skill.read_text(encoding="utf-8")
+            return None
+        SkillsLoader.load_skill = patched_load_skill
         
     except Exception as e:
         print(f"Warning: Failed to apply fully aligned context patch: {e}")
