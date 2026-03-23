@@ -21,12 +21,19 @@ sys.path.insert(0, str(project_root))
 try:
     from cafeext.py.wrapper.security import apply_security_policy
     apply_security_policy()
+    
+    from cafeext.py.wrapper.context_patch import apply_context_patch
+    apply_context_patch()
 except Exception as e:
     print(f"Critical Warning: Security policy injection failed early: {e}")
 # -------------------------
 
+from cafeext.py.wrapper.config import (
+    VAULT_DIR, WORKSPACE_DIR, LOG_DIR, CONFIG_JSON_PATH, DOTENV_PATH, CAFEEXT_DIR
+)
 from nanobot.config.loader import set_config_path, load_config
 from nanobot.cli.commands import app
+import typer
 
 def load_dotenv(path: Path):
     if not path.exists():
@@ -42,10 +49,11 @@ def load_dotenv(path: Path):
 
 def setup_injection():
     """核心注入逻辑：配置、Key 与 日志拦截"""
-    config_path = cafeext_dir / "config.json"
-    workspace_path = cafeext_dir / "workspace"
+    config_path = CONFIG_JSON_PATH
+    workspace_path = WORKSPACE_DIR
+    vault_path = VAULT_DIR
     session_path = workspace_path / "sessions"
-    log_dir = cafeext_dir / "logs"
+    log_dir = LOG_DIR
     
     # 修正 Typer 显示名称和描述
     app.info.name = "nb"
@@ -62,6 +70,17 @@ def setup_injection():
             discord_cfg = getattr(config.channels, 'discord', None)
             if isinstance(discord_cfg, dict):
                 discord_cfg["token"] = discord_token
+                
+        # 注入 Vault MCP (金库级 MCP)
+        vault_mcp_path = vault_path / "mcp.json"
+        if vault_mcp_path.exists():
+            with open(vault_mcp_path, "r", encoding="utf-8") as f:
+                vault_mcp = json.load(f)
+                if isinstance(vault_mcp, dict):
+                    if getattr(config, "mcpServers", None) is None:
+                        config.mcpServers = {}
+                    config.mcpServers.update(vault_mcp)
+
         import nanobot.config.loader
         nanobot.config.loader.load_config = lambda *args, **kwargs: config
     except Exception as e:
@@ -79,6 +98,57 @@ def setup_injection():
     def open_workspace():
         print(f"Opening {workspace_path} in Finder...")
         subprocess.run(["open", str(workspace_path)])
+
+    @app.command(name="vault", help="Open private vault in Finder", rich_help_panel=panel_name)
+    def open_vault():
+        print(f"Opening {vault_path} in Finder...")
+        subprocess.run(["open", str(vault_path)])
+
+    @app.command(name="doctor", help="Check and initialize missing Sidecar files/dirs", rich_help_panel=panel_name)
+    def run_doctor():
+        """Sidecar 环境健康检查与初始化"""
+        print("\n🩺 [Sidecar Doctor] Checking environment...")
+        print(f"  - Config:    {CONFIG_JSON_PATH}")
+        print(f"  - Workspace: {WORKSPACE_DIR}")
+        print(f"  - Vault:     {VAULT_DIR}")
+        
+        missing = []
+        # 检查金库目录
+        if not VAULT_DIR.exists(): missing.append(("dir", VAULT_DIR))
+        
+        # 检查金库核心文件
+        vault_files = ["SOUL.md", "USER.md", "BOT.md", "AGENTS.md", "MEMORY.md", "mcp.json"]
+        for f in vault_files:
+            p = VAULT_DIR / f
+            if not p.exists(): missing.append(("file", p))
+            
+        # 检查工作区目录
+        for d in ["sessions", "skills"]:
+            p = WORKSPACE_DIR / d
+            if not p.exists(): missing.append(("dir", p))
+
+        if not missing:
+            print("\n✅ All systems go! Your environment is complete.")
+            return
+
+        print("\n⚠️  Found missing items:")
+        for type, path in missing:
+            print(f"  [{type}] {path}")
+
+        if typer.confirm("\nWould you like me to initialize these missing items?"):
+            for type, path in missing:
+                if type == "dir":
+                    path.mkdir(parents=True, exist_ok=True)
+                    print(f"  Created directory: {path.name}")
+                else:
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.touch()
+                    if path.name == "mcp.json":
+                        path.write_text("{}", encoding="utf-8")
+                    print(f"  Created file: {path.name}")
+            print("\n✨ Initialization complete.")
+        else:
+            print("\nAborted. Please manually create the missing items.")
 
     @app.command(name="logs", help="Tail the latest inference logs", rich_help_panel=panel_name)
     def tail_logs():
@@ -146,13 +216,13 @@ def setup_injection():
         print(f"Warning: LiteLLM logging setup failed: {e}")
 
 def main():
-    load_dotenv(cafeext_dir / ".env")
-    set_config_path(cafeext_dir / "config.json")
+    load_dotenv(DOTENV_PATH)
+    set_config_path(CONFIG_JSON_PATH)
     setup_injection()
-    workspace_path = cafeext_dir / "workspace"
+    
     if len(sys.argv) > 1 and sys.argv[1] == "onboard":
         if "--workspace" not in sys.argv and "-w" not in sys.argv:
-            sys.argv.extend(["--workspace", str(workspace_path)])
+            sys.argv.extend(["--workspace", str(WORKSPACE_DIR)])
     app()
 
 if __name__ == "__main__":
