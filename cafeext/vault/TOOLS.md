@@ -47,5 +47,12 @@ Add whatever helps you do your job. This is your cheat sheet.
 
 ### 倾向使用的工具
 
-如果被要求搜索信息，多用几次 `web_search`，然后激活 Skill `agent-browser`，按其指示看看感兴趣的链接。如果遇到问题，用 `web_fetch`。
+如果想搜索知识库，或者希望回忆信息，你可以用 `grep --count -ie "关键词1|关键词2|..."` 搜索 memory 目录，定位关键词所在的文件，然后再读文件。
+
+如果被要求从网上搜索信息，多用几次 `web_search`，然后激活 Skill `agent-browser`，按其指示看看感兴趣的链接。如果遇到问题，用 `web_fetch`。
+
 如果被要求看看某些网站上的信息，直接用 `agent-browser` 看就好啦。
+
+### 什么时候 spawn subagent
+
+在调用工具的时候，除非 skill 指示，或者用户明确指示，否则不要 spawn subagent。

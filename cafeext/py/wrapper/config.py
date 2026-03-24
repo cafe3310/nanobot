@@ -29,7 +29,7 @@ DISABLED_TOOLS = []
 # --- 3. 优雅日志表现 (Elegant Logging) ---
 
 # 日志截断阈值 (单个字段最大字符数)
-LOG_TRUNCATE_LIMIT = 16384
+LOG_TRUNCATE_LIMIT = 32000
 
 # 日志文件后缀 (使用 .log 强调人类可读性)
 LOG_SUFFIX = ".log"

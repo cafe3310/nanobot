@@ -48,7 +48,33 @@ def apply_prompt_patch():
             
             return identity
 
+        def patched_build_system_prompt(self, skill_names: list[str] | None = None) -> str:
+            """重写 build_system_prompt 以支持完全定制的 Markdown 技能清单。"""
+            parts = [self._get_identity()]
+
+            bootstrap = self._load_bootstrap_files()
+            if bootstrap:
+                parts.append(bootstrap)
+
+            memory = self.memory.get_memory_context()
+            if memory:
+                parts.append(f"# Memory\n\n{memory}")
+
+            always_skills = self.skills.get_always_skills()
+            if always_skills:
+                always_content = self.skills.load_skills_for_context(always_skills)
+                if always_content:
+                    parts.append(f"# Active Skills\n\n{always_content}")
+
+            # 注入咱们定制的 Markdown 技能清单
+            skills_summary = self.skills.build_skills_summary()
+            if skills_summary:
+                parts.append(skills_summary)
+
+            return "\n\n---\n\n".join(parts)
+
         ContextBuilder._get_identity = patched_get_identity
+        ContextBuilder.build_system_prompt = patched_build_system_prompt
 
     except Exception as e:
         print(f"Warning: Failed to apply prompt override patch: {e}")

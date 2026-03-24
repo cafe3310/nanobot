@@ -59,8 +59,30 @@ def apply_skill_patch():
                 
             return None
 
+        def patched_build_skills_summary(self) -> str:
+            """重写 build_skills_summary 为更自然的 Markdown 列表格式，而非 XML。"""
+            all_skills = self.list_skills(filter_unavailable=False)
+            if not all_skills:
+                return ""
+
+            lines = ["# 模型技能(Agent Skills)\n"]
+            lines.append("如果你发现自己不会做某件事，请**主动使用 `read_file` 工具**读取下表对应技能的 `SKILL.md` 文件。读取后你就会获得该领域的专业知识。")
+            lines.append("**注意：不要尝试直接调用下表中的技能名称作为工具，它们只是存储在磁盘上的知识库。**\n")
+            for s in all_skills:
+                name = s["name"].lower()
+                path = s["path"]
+                desc = self._get_skill_description(s["name"])
+                skill_meta = self._get_skill_meta(s["name"])
+                available = self._check_requirements(skill_meta)
+
+                status = "" if available else "(禁用)"
+                lines.append(f"- {name}{status}: {desc}，位于 {path}")
+
+            return "\n".join(lines)
+
         SkillsLoader.list_skills = patched_list_skills
         SkillsLoader.load_skill = patched_load_skill
+        SkillsLoader.build_skills_summary = patched_build_skills_summary
 
     except Exception as e:
         print(f"Warning: Failed to apply skill patch: {e}")
