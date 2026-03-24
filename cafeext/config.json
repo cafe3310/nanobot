@@ -2,7 +2,7 @@
   "agents": {
     "defaults": {
       "workspace": "/Users/sipan/workspace/nanobot/cafeext/workspace",
-      "model": "ling26_agentic_dmt_0320_3_ep3",
+      "model": "Ling-2.5-1T",
       "provider": "custom",
       "maxTokens": 32768,
       "contextWindowTokens": 262144,
