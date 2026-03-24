@@ -19,12 +19,25 @@ def format_content(content: Any) -> str:
         # 仅对非字符串使用 json.dumps，且确保不转义中文
         content = json.dumps(content, ensure_ascii=False)
     
-    # 替换物理换行为 ↵ 符号
+    # 1. 替换物理换行为 ↵ 符号
     content = content.replace("\n", " ↵ ").replace("\r", "")
-    # 压缩连续空白
+    # 2. 压缩连续空白
     content = re.sub(r"\s+", " ", content)
     
-    # 使用配置的阈值进行截断
+    # 3. 特殊处理：截断 Base64 图片数据 (data:image/...;base64,...)
+    def truncate_base64(match):
+        prefix = match.group(1) # data:image/xxx;base64,
+        data = match.group(2)   # 原始 base64 数据
+        if len(data) > 40:
+            # 保留前 10 位和后 10 位，中间使用省略号
+            return f"{prefix}{data[:10]}......(base64)......{data[-10:]}"
+        return match.group(0)
+
+    # 匹配 data:image/xxx;base64, 后跟一大串 Base64 字符
+    b64_pattern = r"(data:image\/[a-zA-Z]*;base64,)([a-zA-Z0-9+\/]+={0,2})"
+    content = re.sub(b64_pattern, truncate_base64, content)
+
+    # 4. 使用配置的阈值进行全局截断
     if len(content) > LOG_TRUNCATE_LIMIT:
         return content[:LOG_TRUNCATE_LIMIT] + "... (truncated)"
     return content.strip()

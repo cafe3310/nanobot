@@ -172,17 +172,34 @@ def apply_subagent_patch():
                 # 使用指定模型或默认模型
                 target_model = model or self.model
                 
+                # --- 调试日志：记录 subagent 请求详情 ---
+                from cafeext.py.callbacks.logger import write_pretty_entry
+                write_pretty_entry("request", {"subagent_id": task_id, "model": target_model, "label": label}, messages)
+                # ------------------------------------
+
                 max_iterations = 15
                 iteration = 0
                 final_result: str | None = None
 
                 while iteration < max_iterations:
                     iteration += 1
-                    response = await self.provider.chat_with_retry(
-                        messages=messages,
-                        tools=tools.get_definitions(),
-                        model=target_model,
-                    )
+                    try:
+                        response = await self.provider.chat_with_retry(
+                            messages=messages,
+                            tools=tools.get_definitions(),
+                            model=target_model,
+                        )
+                        # --- 调试日志：记录 subagent 响应详情 ---
+                        from cafeext.py.callbacks.logger import write_pretty_entry
+                        res_content = response.content or (f"Call tools: {response.tool_calls}" if response.tool_calls else "")
+                        write_pretty_entry("success", {"subagent_id": task_id, "iteration": iteration}, [{"role": "assistant", "content": res_content}])
+                        # ------------------------------------
+                    except Exception as e:
+                        # --- 调试日志：记录 subagent 请求失败 ---
+                        from cafeext.py.callbacks.logger import write_pretty_entry
+                        write_pretty_entry("failure", {"subagent_id": task_id, "iteration": iteration}, [{"role": "error", "content": str(e)}])
+                        # ------------------------------------
+                        raise e
 
                     if response.has_tool_calls:
                         tool_call_dicts = [tc.to_openai_tool_call() for tc in response.tool_calls]
@@ -210,6 +227,8 @@ def apply_subagent_patch():
                 await self._announce_result(task_id, label, task, final_result, origin, "ok")
 
             except Exception as e:
+                from cafeext.py.callbacks.logger import write_pretty_entry
+                write_pretty_entry("failure", {"subagent_id": task_id, "label": label, "error_type": type(e).__name__}, [{"role": "error", "content": str(e)}])
                 logger.error("Subagent [{}] failed: {}", task_id, e)
                 await self._announce_result(task_id, label, task, f"Error: {str(e)}", origin, "error")
 
