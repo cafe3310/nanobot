@@ -1,1 +1,0 @@
---- START VAULT-MEM-USER ---\nFixed core data for USER.md\n--- END VAULT-MEM-USER ---

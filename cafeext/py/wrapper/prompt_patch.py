@@ -46,11 +46,6 @@ def apply_prompt_patch():
                 # 替换掉原始的 Guidelines
                 identity = parts[0] + OVERRIDE_GUIDELINES
             
-            # 3. 注入 Vault 目录信息 (从 context_patch 迁移过来)
-            vault_path = str(VAULT_DIR.resolve())
-            vault_info = f"- Fixed memory & skills (Read-only): {vault_path}\n"
-            identity = identity.replace("## Workspace", f"## Workspace\n{vault_info}")
-            
             return identity
 
         ContextBuilder._get_identity = patched_get_identity

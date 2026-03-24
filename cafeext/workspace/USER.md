@@ -1,5 +1,3 @@
-[WORKSPACE-MEM-USER-START]
-
 # User Profile
 
 Information about the user to help personalize interactions.
@@ -49,5 +47,3 @@ Information about the user to help personalize interactions.
 ---
 
 *Edit this file to customize nanobot's behavior for your needs.*
-
-[WORKSPACE-MEM-USER-END]

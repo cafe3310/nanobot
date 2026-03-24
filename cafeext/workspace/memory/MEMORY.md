@@ -1,5 +1,3 @@
-[WORKSPACE-MEM-MEMORY-START]
-
 # 长期记忆 (Long-term Memory)
 
 此文件存储重要的信息，这些信息应该在多个会话之间持续保留。
@@ -30,9 +28,7 @@
 
 ---
 
-*此文件会在 nanobot 需要记住重要信息时自动更新。*
+*此文件会在 nanobot 需要记住重要信息时更新。*
 共享的工作空间体验。
 
 ## 会话笔记 (Session Notes)
-
-[WORKSPACE-MEM-MEMORY-END]
