@@ -30,6 +30,9 @@ try:
 
     from cafeext.py.wrapper.prompt_patch import apply_prompt_patch
     apply_prompt_patch()
+
+    from cafeext.py.wrapper.subagent_patch import apply_subagent_patch
+    apply_subagent_patch()
 except Exception as e:
     print(f"Critical Warning: Security policy injection failed early: {e}")
 # -------------------------
