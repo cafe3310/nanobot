@@ -129,21 +129,24 @@ def apply_security_policy():
             allowed = True
             is_whitelisted = False
             
+            # 提前准备参数展示，以便白名单和人工确认都能使用
+            try:
+                pretty_params = json.dumps(params, indent=2, ensure_ascii=False)
+            except:
+                pretty_params = str(params)
+
             # 忽略 message 工具，它是沟通核心
             if name not in ["message"]:
                 # 1. 检查白名单
                 whitelist_reason = check_whitelist(name, params)
                 if whitelist_reason:
-                    print(f"🛡️  [WHITELIST] Auto-approving '{name}' (原因: {whitelist_reason})")
+                    print(f"\n🛡️  [WHITELIST] Auto-approving '{name}' (原因: {whitelist_reason})")
+                    print(f"🔧 Tool  : {name}")
+                    print(f"📝 Params: {pretty_params}")
                     is_whitelisted = True
                     allowed = True
                 else:
                     # 2. 不在白名单，执行多维人工确认
-                    try:
-                        pretty_params = json.dumps(params, indent=2, ensure_ascii=False)
-                    except:
-                        pretty_params = str(params)
-
                     # 终端提示
                     print(f"\a\n\n{'='*50}")
                     print(f"🛡️  [HUMAN-IN-THE-LOOP] Confirm Tool Execution")
