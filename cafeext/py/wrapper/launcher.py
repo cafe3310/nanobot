@@ -36,6 +36,9 @@ try:
 
     from cafeext.py.wrapper.error_patch import apply_error_patch
     apply_error_patch()
+
+    from cafeext.py.wrapper.image_gen import apply_image_gen_patch
+    apply_image_gen_patch()
 except Exception as e:
     print(f"Critical Warning: Security policy injection failed early: {e}")
 # -------------------------
