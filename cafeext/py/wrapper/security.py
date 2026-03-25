@@ -25,6 +25,65 @@ def get_char():
     finally:
         termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
 
+# --- 规则辅助算子 (Rule Operators) ---
+
+def is_simple_command(cmd: str) -> bool:
+    """
+    确保命令是单一的，没有通过 shell 符号拼接。
+    防御：&&, ||, ;, |, &, \n, ` (反引号), $()
+    """
+    if not cmd: return False
+    separators = ["&&", "||", ";", "|", "&", "\n", "`", "$("]
+    # 简单的包含检查，如果需要更严谨可以用正则处理转义情况
+    return not any(sep in cmd for sep in separators)
+
+def is_exec_starting_with(params: dict, allowed_prefixes: list) -> bool:
+    """检测 exec 命令是否以特定前缀开头且没有多命令拼接"""
+    cmd = params.get("command", "").strip()
+    if not is_simple_command(cmd):
+        return False
+    return any(cmd.startswith(p) for p in allowed_prefixes)
+
+# --- 工具执行白名单 (Whitelist) ---
+
+WHITELIST_RULES = [
+    {
+        "name": lambda n: n in ["read_file", "list_dir", "list_directory"],
+        "args": lambda a: True,
+        "description": "只读文件系统操作"
+    },
+    {
+        "name": lambda n: n == "exec",
+        "args": lambda a: is_exec_starting_with(a, ["cat ", "ls ", "find ", "wc ", "tail ", "head ", "which "]),
+        "description": "受控的只读 CLI 探测操作"
+    },
+    {
+        "name": lambda n: n == "exec",
+        "args": lambda a: is_exec_starting_with(a, ["agent-browser "]),
+        "description": "浏览器自动化操作"
+    },
+    {
+        "name": lambda n: n == "web_search",
+        "args": lambda a: True,
+        "description": "联网搜索"
+    },
+    {
+        "name": lambda n: n == "web_fetch",
+        "args": lambda a: True,
+        "description": "网页内容抓取"
+    }
+]
+
+def check_whitelist(name: str, params: dict) -> str | None:
+    """检查工具调用是否匹配白名单。匹配成功返回规则描述，否则返回 None。"""
+    for rule in WHITELIST_RULES:
+        try:
+            if rule["name"](name) and rule["args"](params):
+                return rule["description"]
+        except:
+            continue
+    return None
+
 def apply_security_policy():
     """通过全局 Monkey Patch 强制执行安全策略、全链路审计与多维人工确认。"""
     try:
@@ -48,6 +107,8 @@ def apply_security_policy():
             cafe_tool_start_log(name, params)
             
             # 特殊逻辑：允许只读工具访问整个 Vault 目录 (只读穿透)
+            # 注意：这里的逻辑在白名单之前，但功能上是互补的。
+            # 为了统一，我们保持这个逻辑，但后续白名单会处理通用的放行。
             if name in ["read_file", "list_dir", "list_directory"]:
                 from cafeext.py.wrapper.config import VAULT_DIR
                 path_val = params.get("path") or params.get("dir_path", "")
@@ -64,38 +125,48 @@ def apply_security_policy():
                         finally:
                             tool_instance._extra_allowed_dirs = old_extra
 
-            # B. 多维人工确认 (终端 + macOS 对话框)
+            # B. 白名单检测与人工确认
             allowed = True
+            is_whitelisted = False
+            
+            # 忽略 message 工具，它是沟通核心
             if name not in ["message"]:
-                try:
-                    pretty_params = json.dumps(params, indent=2, ensure_ascii=False)
-                except:
-                    pretty_params = str(params)
-
-                # 1. 终端静默提示（包含响铃）
-                print(f"\a\n\n{'='*50}")
-                print(f"🛡️  [HUMAN-IN-THE-LOOP] Confirm Tool Execution")
-                print(f"{'='*50}")
-                print(f"🔧 Tool  : {name}")
-                print(f"📝 Params: {pretty_params}")
-                print(f"{'-'*50}")
-                
-                # 2. 尝试 macOS 原生确认 (三态判断)
-                # True: Allow, False: Deny, None: UI Error
-                ui_result = ask_macos_permission(name, params)
-                
-                if ui_result is True:
+                # 1. 检查白名单
+                whitelist_reason = check_whitelist(name, params)
+                if whitelist_reason:
+                    print(f"🛡️  [WHITELIST] Auto-approving '{name}' (原因: {whitelist_reason})")
+                    is_whitelisted = True
                     allowed = True
-                elif ui_result is False:
-                    allowed = False # 用户明确拒绝，不触发后备
                 else:
-                    # ui_result is None: 弹窗失败，回退到终端物理交互
-                    print("📢 macOS Dialog unavailable. Fallback to terminal...")
-                    sys.stdout.write("👉 Action: [1] ✅ Execute | [2] ❌ Deny\nSelection: ")
-                    sys.stdout.flush()
-                    choice = get_char()
-                    sys.stdout.write(f"{choice}\n")
-                    allowed = (choice == "1")
+                    # 2. 不在白名单，执行多维人工确认
+                    try:
+                        pretty_params = json.dumps(params, indent=2, ensure_ascii=False)
+                    except:
+                        pretty_params = str(params)
+
+                    # 终端提示
+                    print(f"\a\n\n{'='*50}")
+                    print(f"🛡️  [HUMAN-IN-THE-LOOP] Confirm Tool Execution")
+                    print(f"{'='*50}")
+                    print(f"🔧 Tool  : {name}")
+                    print(f"📝 Params: {pretty_params}")
+                    print(f"{'-'*50}")
+                    
+                    # 尝试 macOS 原生确认
+                    ui_result = ask_macos_permission(name, params)
+                    
+                    if ui_result is True:
+                        allowed = True
+                    elif ui_result is False:
+                        allowed = False 
+                    else:
+                        # 终端物理交互
+                        print("📢 macOS Dialog unavailable. Fallback to terminal...")
+                        sys.stdout.write("👉 Action: [1] ✅ Execute | [2] ❌ Deny\nSelection: ")
+                        sys.stdout.flush()
+                        choice = get_char()
+                        sys.stdout.write(f"{choice}\n")
+                        allowed = (choice == "1")
 
                 if not allowed:
                     deny_msg = "[Operation Cancelled] Reason: User denied execution."
@@ -104,7 +175,9 @@ def apply_security_policy():
                     return deny_msg
 
             # C. 继续执行
-            print(f"🚀 Executing {name}...")
+            if not is_whitelisted:
+                print(f"🚀 Executing {name}...")
+            
             start_t = time.perf_counter()
             try:
                 result = await original_execute(self, name, params)
