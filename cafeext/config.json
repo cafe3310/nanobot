@@ -23,7 +23,7 @@
     "discord": {
       "enabled": true,
       "token": "ENV_VAR_PLACEHOLDER",
-      "allowFrom": ["1408100579741405255"],
+      "allowFrom": ["*"],
       "gatewayUrl": "wss://gateway.discord.gg/?v=10&encoding=json",
       "intents": 37377,
       "groupPolicy": "mention"

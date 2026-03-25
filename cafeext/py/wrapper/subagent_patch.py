@@ -25,7 +25,7 @@ def apply_subagent_patch():
                     },
                     "model": {
                         "type": "string",
-                        "description": "可选：指定子代理使用的模型（如针对图片的 Qwen3.5-35B-A3B）。",
+                        "description": "可选：指定子代理使用的模型。",
                     },
                     "images": {
                         "type": "array",
