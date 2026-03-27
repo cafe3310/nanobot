@@ -2,9 +2,9 @@
   "agents": {
     "defaults": {
       "workspace": "/Users/sipan/workspace/nanobot/cafeext/workspace",
-      "model": "Ling-2.5-1T",
+      "model": "flash26_mtp_0408",
       "provider": "custom",
-      "maxTokens": 32768,
+      "maxTokens": 131072,
       "contextWindowTokens": 262144,
       "temperature": 1,
       "maxToolIterations": 40,

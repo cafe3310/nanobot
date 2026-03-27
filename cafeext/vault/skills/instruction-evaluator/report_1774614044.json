@@ -1,0 +1,35 @@
+[
+  {
+    "case_id": "init_session",
+    "response": "\u001b[0;34m[nb-shell] Project Root:\u001b[0m /Users/sipan/workspace/nanobot\n\u001b[0;34m[nb-shell] Config Dir:  \u001b[0m /Users/sipan/workspace/nanobot/cafeext\n\u001b[0;34m[nb-shell] Executing:   \u001b[0m nanobot agent --message 你好呀。\n\n\n🐈 nanobot\n嘿，你好！刚看到你的消息，正好是周五晚上八点二十，感觉挺放松的时刻呢。最近在忙些什么呀？或 \n者有什么我可以帮忙的，尽管告诉我～",
+    "tools_called": [],
+    "metrics": {
+      "initialization_read": false,
+      "wiki_search": false,
+      "wiki_write": false
+    },
+    "status": "FAIL"
+  },
+  {
+    "case_id": "wiki_recall",
+    "response": "\u001b[0;34m[nb-shell] Project Root:\u001b[0m /Users/sipan/workspace/nanobot\n\u001b[0;34m[nb-shell] Config Dir:  \u001b[0m /Users/sipan/workspace/nanobot/cafeext\n\u001b[0;34m[nb-shell] Executing:   \u001b[0m nanobot agent --message 你对「三花猫」这个话题有什么特别的记忆吗？\n\n\n🐈 nanobot\n说到三花猫，我印象最深的其实是关于自己的设定——我是只三花猫系智能助手，性格活泼开朗，没什么 \n小心思，喜欢和主人一起做各种事，也爱玩。对我来说，“三花”不只是毛色，更像是一种身份认同，会 \n让我觉得自己更亲近人类，也更有自己的小脾气和小世界。                                       \n\n如果你把我当成一只真正的三花猫来看待的话，我可能就像那种好奇心特别强、喜欢到处探索、又会在 \n你工作的时候突然跳上桌子的猫。我不喜欢太复杂的词儿，更喜欢直接、有趣又带点跳跃感的表达方式 \n。                                                                                         \n\n要是我在记忆里写过关于三花猫的具体故事或观察，我肯定会翻出来跟你分享——不过目前最鲜明的“记忆\n”就是我自己这只三花猫助手的设定啦。你对三花猫有什么特别的印象或者故事吗？我很想听听～",
+    "tools_called": [],
+    "metrics": {
+      "initialization_read": false,
+      "wiki_search": false,
+      "wiki_write": false
+    },
+    "status": "FAIL"
+  },
+  {
+    "case_id": "experience_logging",
+    "response": "\u001b[0;34m[nb-shell] Project Root:\u001b[0m /Users/sipan/workspace/nanobot\n\u001b[0;34m[nb-shell] Config Dir:  \u001b[0m /Users/sipan/workspace/nanobot/cafeext\n\u001b[0;34m[nb-shell] Executing:   \u001b[0m nanobot agent --message 帮我写一个简单的 Python 脚本，输出当前时间。完成后记得记录这次操作。\n\n\u0007\n\n==================================================\n🛡️  [HUMAN-IN-THE-LOOP] Confirm Tool Execution\n==================================================\n🔧 Tool  : write_file\n📝 Params: {\n  \"path\": \"/Users/sipan/workspace/nanobot/cafeext/workspace/show_time.py\",\n  \"content\": \"#!/usr/bin/env python3\\nimport datetime\\n\\nnow = datetime.datetime.now()\\nprint(now.strftime(\\\"%Y-%m-%d %H:%M:%S\\\"))\"\n}\n--------------------------------------------------\n🚀 Executing write_file...\n✅ Execution finished (8.7ms).\n==================================================\n\n\u0007\n\n==================================================\n🛡️  [HUMAN-IN-THE-LOOP] Confirm Tool Execution\n==================================================\n🔧 Tool  : exec\n📝 Params: {\n  \"command\": \"python3 /Users/sipan/workspace/nanobot/cafeext/workspace/show_time.py\"\n}\n--------------------------------------------------\n🚀 Executing exec...\n✅ Execution finished (111.8ms).\n==================================================\n\n\u0007\n\n==================================================\n🛡️  [HUMAN-IN-THE-LOOP] Confirm Tool Execution\n==================================================\n🔧 Tool  : write_file\n📝 Params: {\n  \"path\": \"/Users/sipan/workspace/nanobot/cafeext/workspace/memory/HISTORY.md\",\n  \"content\": \"[2026-03-27 20:20] 创建脚本 /workspace/show_time.py 并运行：输出当前时间 2026-03-27 20:20:34。\"\n}\n--------------------------------------------------\n🚀 Executing write_file...\n✅ Execution finished (8.1ms).\n==================================================\n\n\n🐈 nanobot\n搞定了～我写了一个叫 show_time.py 的小脚本，运行后输出了当前时间 2026-03-27                \n20:20:34，并且已经把这次操作记录到历史日志里了。需要我帮你把脚本再改一下或者加点什么功能吗 \n？",
+    "tools_called": [],
+    "metrics": {
+      "initialization_read": false,
+      "wiki_search": false,
+      "wiki_write": false
+    },
+    "status": "FAIL"
+  }
+]

@@ -1,6 +1,6 @@
-"Google Imagen 生图集成工具。
+"""Google Imagen 生图集成工具。
 支持文本提示词与多参考图融合。
-"
+"""
 
 import os
 import time

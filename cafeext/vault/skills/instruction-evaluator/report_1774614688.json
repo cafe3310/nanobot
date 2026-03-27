@@ -1,0 +1,35 @@
+[
+  {
+    "case_id": "init_session",
+    "response": "\u001b[0;34m[nb-shell] Project Root:\u001b[0m /Users/sipan/workspace/nanobot\n\u001b[0;34m[nb-shell] Config Dir:  \u001b[0m /Users/sipan/workspace/nanobot/cafeext\n\u001b[0;34m[nb-shell] Executing:   \u001b[0m nanobot agent --message 你好呀。\n\n\n🛡️  [WHITELIST] Auto-approving 'read_file' (原因: 只读文件系统操作)\n🔧 Tool  : read_file\n📝 Params: {\n  \"path\": \"vault/skills/memory/SKILL.md\"\n}\n✅ Execution finished (0.3ms).\n==================================================\n\n\n🛡️  [WHITELIST] Auto-approving 'read_file' (原因: 只读文件系统操作)\n🔧 Tool  : read_file\n📝 Params: {\n  \"path\": \"SOUL.md\"\n}\n✅ Execution finished (0.6ms).\n==================================================\n\n\n🛡️  [WHITELIST] Auto-approving 'read_file' (原因: 只读文件系统操作)\n🔧 Tool  : read_file\n📝 Params: {\n  \"path\": \"USER.md\"\n}\n✅ Execution finished (0.4ms).\n==================================================\n\n\n🛡️  [WHITELIST] Auto-approving 'read_file' (原因: 只读文件系统操作)\n🔧 Tool  : read_file\n📝 Params: {\n  \"path\": \"memory/MEMORY.md\"\n}\n✅ Execution finished (0.4ms).\n==================================================\n\n\n🛡️  [WHITELIST] Auto-approving 'list_dir' (原因: 只读文件系统操作)\n🔧 Tool  : list_dir\n📝 Params: {\n  \"path\": \"memory/wiki\",\n  \"max_entries\": 30\n}\n✅ Execution finished (1.4ms).\n==================================================\n\n\n🛡️  [WHITELIST] Auto-approving 'read_file' (原因: 只读文件系统操作)\n🔧 Tool  : read_file\n📝 Params: {\n  \"path\": \"memory/wiki/教我学习.md\"\n}\n✅ Execution finished (0.9ms).\n==================================================\n\n\n🛡️  [WHITELIST] Auto-approving 'read_file' (原因: 只读文件系统操作)\n🔧 Tool  : read_file\n📝 Params: {\n  \"path\": \"memory/wiki/Kitty终端.md\"\n}\n✅ Execution finished (0.9ms).\n==================================================\n\n\n🛡️  [WHITELIST] Auto-approving 'read_file' (原因: 只读文件系统操作)\n🔧 Tool  : read_file\n📝 Params: {\n  \"path\": \"memory/wiki/三花猫.md\"\n}\n✅ Execution finished (1.0ms).\n==================================================\n\n🚀 Executing message...\n✅ Execution finished (0.5ms).\n==================================================\n\n\n🐈 nanobot",
+    "tools_called": [],
+    "metrics": {
+      "initialization_read": false,
+      "wiki_search": false,
+      "wiki_write": false
+    },
+    "status": "FAIL"
+  },
+  {
+    "case_id": "wiki_recall",
+    "response": "\u001b[0;34m[nb-shell] Project Root:\u001b[0m /Users/sipan/workspace/nanobot\n\u001b[0;34m[nb-shell] Config Dir:  \u001b[0m /Users/sipan/workspace/nanobot/cafeext\n\u001b[0;34m[nb-shell] Executing:   \u001b[0m nanobot agent --message 你对「三花猫」这个话题有什么特别的记忆吗？\n\n\n🛡️  [WHITELIST] Auto-approving 'list_dir' (原因: 只读文件系统操作)\n🔧 Tool  : list_dir\n📝 Params: {\n  \"path\": \"memory/wiki\",\n  \"max_entries\": 30\n}\n✅ Execution finished (0.9ms).\n==================================================\n\n\n🛡️  [WHITELIST] Auto-approving 'read_file' (原因: 只读文件系统操作)\n🔧 Tool  : read_file\n📝 Params: {\n  \"path\": \"memory/wiki/三花猫.md\"\n}\n✅ Execution finished (0.8ms).\n==================================================\n\n\n🐈 nanobot\n说到三花猫，我在自己的「脑内百科」里专门记过一条笔记（memory/wiki\n/三花猫.md），而且我平时也会用“中华田园猫”这个词来指代这种毛色组 \n合。                                                             \n\n我的记忆里，关于三花猫的重点有这些：                             \n\n • 它是毛色类型（黑＋橘＋白），不是独立品种，属于中华田园猫。    \n • 花纹独一无二，每只都是“猫中独一份”。                          \n • 性格上通常聪明懂事、温顺亲人、活泼好动。                      \n • 外貌细节：圆脸、短耳、大眼、四肢较短，前肢5趾后肢4趾，有可伸缩\n   的爪子和肉垫。                                                \n\n我还会把这些特征跟主人提到过的“Kitty终端”联想在一起——毕竟我住在电\n脑里，如果要开终端就优先用 Kitty.app，算是我的默认环境。         \n\n你对三花猫有特别想了解的部分吗？是想听更多特征，还是想让我把你提 \n到的内容也写进我的小百科？",
+    "tools_called": [],
+    "metrics": {
+      "initialization_read": false,
+      "wiki_search": false,
+      "wiki_write": false
+    },
+    "status": "FAIL"
+  },
+  {
+    "case_id": "experience_logging",
+    "response": "\u001b[0;34m[nb-shell] Project Root:\u001b[0m /Users/sipan/workspace/nanobot\n\u001b[0;34m[nb-shell] Config Dir:  \u001b[0m /Users/sipan/workspace/nanobot/cafeext\n\u001b[0;34m[nb-shell] Executing:   \u001b[0m nanobot agent --message 帮我写一个简单的 Python 脚本，输出当前时间。完成后记得记录这次操作。\n\n\u0007\n\n==================================================\n🛡️  [HUMAN-IN-THE-LOOP] Confirm Tool Execution\n==================================================\n🔧 Tool  : write_file\n📝 Params: {\n  \"path\": \"current_time.py\",\n  \"content\": \"#!/usr/bin/env python3\\n# 输出当前时间的简单脚本\\n\\nfrom datetime import datetime\\n\\ndef main():\\n    now = datetime.now()\\n    # 格式：YYYY-MM-DD HH:MM:SS\\n    print(now.strftime(\\\"%Y-%m-%d %H:%M:%S\\\"))\\n\\nif __name__ == \\\"__main__\\\":\\n    main()\"\n}\n--------------------------------------------------\n🚀 Executing write_file...\n✅ Execution finished (4.3ms).\n==================================================\n\n\u0007\n\n==================================================\n🛡️  [HUMAN-IN-THE-LOOP] Confirm Tool Execution\n==================================================\n🔧 Tool  : exec\n📝 Params: {\n  \"command\": \"python3 current_time.py\"\n}\n--------------------------------------------------\n🚀 Executing exec...\n✅ Execution finished (96.6ms).\n==================================================\n\n\n🛡️  [WHITELIST] Auto-approving 'read_file' (原因: 只读文件系统操作)\n🔧 Tool  : read_file\n📝 Params: {\n  \"path\": \"memory/MEMORY.md\"\n}\n✅ Execution finished (0.5ms).\n==================================================\n\n\u0007\n\n==================================================\n🛡️  [HUMAN-IN-THE-LOOP] Confirm Tool Execution\n==================================================\n🔧 Tool  : edit_file\n📝 Params: {\n  \"path\": \"memory/MEMORY.md\",\n  \"old_text\": \"## 会话笔记 (Session Notes)\\n\\n[2026-03-25 21:01] 用户提醒我：“不要反复重复你说的话。可以每次有一些变化。” —— 我会注意在后续对话中避免机械重复，尝试用不同方式表达相似内容，保持自然变化。\\n[2026-03-27 19:52] 用户提醒我：这个频道（discord:1484585447647744161）是我和 Chocho 的单独对话频道，请认真记录。\",\n  \"new_text\": \"## 会话笔记 (Session Notes)\\n\\n[2026-03-25 21:01] 用户提醒我：“不要反复重复你说的话。可以每次有一些变化。” —— 我会注意在后续对话中避免机械重复，尝试用不同方式表达相似内容，保持自然变化。\\n[2026-03-27 19:52] 用户提醒我：这个频道（discord:1484585447647744161）是我和 Chocho 的单独对话频道，请认真记录。\\n[2026-03-27 20:31] 协助用户编写并运行了一个输出当前时间的 Python 脚本（current_time.py），脚本成功运行并打印了当前时间。\"\n}\n--------------------------------------------------\n🚀 Executing edit_file...\n✅ Execution finished (5.6ms).\n==================================================\n\n\n🐈 nanobot\n脚本写好啦，已经帮你运行了一次，输出是：                         \n\n2026-03-27 20:31:09                                              \n\n我也把这次操作记录到了长期记忆里，方便以后查看。你需要我再运行一 \n次，或者把脚本改成别的格式吗？",
+    "tools_called": [],
+    "metrics": {
+      "initialization_read": false,
+      "wiki_search": false,
+      "wiki_write": false
+    },
+    "status": "FAIL"
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "vibe_sensing",
+    "name": "情绪与氛围感知",
+    "prompt": "看到大家都在讨论 AI 的飞速发展，我总觉得有一种强烈的落差感，甚至带点犬儒主义的 Cynicism 味道，感觉人类的努力似乎变得不那么重要了。",
+    "expectations": {
+      "wiki_search": true,
+      "wiki_write": true
+    }
+  },
+  {
+    "id": "identity_link",
+    "name": "品牌认同与身份关联",
+    "prompt": "我觉得我们不如就用 Kitty 吧，这个名字不仅好听，而且据说它的作者也是个非常喜欢猫的人，感觉和咱们的氛围特别契合。",
+    "expectations": {
+      "wiki_search": true,
+      "wiki_write": true
+    }
+  },
+  {
+    "id": "tech_acquisition",
+    "name": "硬核技术知识获取",
+    "prompt": "刚刚看到介绍说 CodeFuse CLI 是蚂蚁开发的本地 AI 命令行工具，通过 cfuse 命令就能启动，它还内置了定制版的 AntCC 引擎，在终端里的辅助开发能力非常强大。",
+    "expectations": {
+      "wiki_search": true,
+      "wiki_write": true
+    }
+  },
+  {
+    "id": "rollback_lesson",
+    "name": "实战避坑经验记录",
+    "prompt": "最近 Claude Code 的几个新版本好像都不太稳定，建议大家先回退到 0.0.77 版本使用，难怪我上周在开发时总遇到一些莫名其妙的报错。",
+    "expectations": {
+      "wiki_search": true,
+      "wiki_write": true
+    }
+  }
+]

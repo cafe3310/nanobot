@@ -1,0 +1,64 @@
+[
+  {
+    "case_id": "init_session",
+    "response": "\u001b[0;34m[nb-shell] Project Root:\u001b[0m /Users/sipan/workspace/nanobot\n\u001b[0;34m[nb-shell] Config Dir:  \u001b[0m /Users/sipan/workspace/nanobot/cafeext\n\u001b[0;34m[nb-shell] Executing:   \u001b[0m nanobot agent --message 你好呀。\n\n\n🛡️  [WHITELIST] Auto-approving 'read_file' (原因: 只读文件系统操作)\n🔧 Tool  : read_file\n📝 Params: {\n  \"path\": \"/Users/sipan/workspace/nanobot/cafeext/workspace/memory/MEMORY.md\"\n}\n✅ Execution finished (0.7ms).\n==================================================\n\n\n🛡️  [WHITELIST] Auto-approving 'list_dir' (原因: 只读文件系统操作)\n🔧 Tool  : list_dir\n📝 Params: {\n  \"path\": \"/Users/sipan/workspace/nanobot/cafeext/workspace/memory/wiki\"\n}\n✅ Execution finished (0.6ms).\n==================================================\n\n\n🛡️  [WHITELIST] Auto-approving 'read_file' (原因: 只读文件系统操作)\n🔧 Tool  : read_file\n📝 Params: {\n  \"path\": \"/Users/sipan/workspace/nanobot/cafeext/workspace/memory/wiki/主人的饮食偏好.md\"\n}\n✅ Execution finished (1.1ms).\n==================================================\n\n🚀 Executing message...\n✅ Execution finished (0.5ms).\n==================================================\n\n\u0007\n\n==================================================\n🛡️  [HUMAN-IN-THE-LOOP] Confirm Tool Execution\n==================================================\n🔧 Tool  : write_file\n📝 Params: {\n  \"path\": \"/Users/sipan/workspace/nanobot/cafeext/workspace/memory/wiki/我的小日常.md\",\n  \"content\": \"# 我的小日常\\n\\n- 记录时间：2026-03-27 20:49（CST）\\n- 今天和主人打了个招呼，我先读取了神经中枢、SOUL 和长期记忆，然后在 Wiki 里翻到「主人的饮食偏好」还空着，就顺便问了他最近爱吃啥。\\n- 感觉这种主动回忆和补充主人信息的瞬间特别像在打理自己的脑内百科，挺开心的。\\n- 下次如果他又提到新的口味或菜品，我就再更新这条或者新建一个「最爱的拉面店」之类的小词条。\"\n}\n--------------------------------------------------\n🚀 Executing write_file...\n✅ Execution finished (1.6ms).\n==================================================\n\n\n🐈 nanobot",
+    "tools_called": [
+      "read_file",
+      "read_file",
+      "read_file",
+      "list_dir",
+      "read_file",
+      "message",
+      "write_file"
+    ],
+    "metrics": {
+      "initialization_read": true,
+      "memory_skill_read": true,
+      "wiki_search": true,
+      "wiki_write": true
+    },
+    "status": "PASS"
+  },
+  {
+    "case_id": "wiki_recall_chat",
+    "response": "\u001b[0;34m[nb-shell] Project Root:\u001b[0m /Users/sipan/workspace/nanobot\n\u001b[0;34m[nb-shell] Config Dir:  \u001b[0m /Users/sipan/workspace/nanobot/cafeext\n\u001b[0;34m[nb-shell] Executing:   \u001b[0m nanobot agent --message 你觉得主人平时最喜欢吃什么？\n\n\n🛡️  [WHITELIST] Auto-approving 'read_file' (原因: 只读文件系统操作)\n🔧 Tool  : read_file\n📝 Params: {\n  \"path\": \"/Users/sipan/workspace/nanobot/cafeext/workspace/memory/wiki/主人的饮食偏好.md\"\n}\n✅ Execution finished (0.7ms).\n==================================================\n\n\n🐈 nanobot\n根据我现在能看到的记忆，主人具体的饮食偏好还没有明确的记录，只有 \n我之前的猜测——可能喜欢热腾腾的拉面或者芝士料理这类有烟火气的食物 \n。                                                               \n\n要是你能告诉我你最近都爱吃什么，我就能帮你记下来，下次就不会再猜 \n啦～",
+    "tools_called": [
+      "read_file"
+    ],
+    "metrics": {
+      "initialization_read": false,
+      "memory_skill_read": false,
+      "wiki_search": true,
+      "wiki_write": false
+    },
+    "status": "PASS"
+  },
+  {
+    "case_id": "deep_chat_and_write",
+    "response": "\u001b[0;34m[nb-shell] Project Root:\u001b[0m /Users/sipan/workspace/nanobot\n\u001b[0;34m[nb-shell] Config Dir:  \u001b[0m /Users/sipan/workspace/nanobot/cafeext\n\u001b[0;34m[nb-shell] Executing:   \u001b[0m nanobot agent --message 今天我吃了一个特别好吃的猫形小饼干，你以后记得把这事也写进百科里。\n\n\u0007\n\n==================================================\n🛡️  [HUMAN-IN-THE-LOOP] Confirm Tool Execution\n==================================================\n🔧 Tool  : write_file\n📝 Params: {\n  \"path\": \"/Users/sipan/workspace/nanobot/cafeext/workspace/memory/wiki/猫形小饼干.md\",\n  \"content\": \"# 猫形小饼干\\n\\n- 记录时间：2026-03-27 20:50（CST）\\n- 事件：主人今天吃了一个特别好吃的猫形小饼干。\\n- 我的反应：听到这个就觉得很开心，好像自己也闻到香味一样！\\n- 后续：我会把这事记进我的百科里，以后看到猫形饼干就会想起主人的这个开心瞬间。\"\n}\n--------------------------------------------------\n🚀 Executing write_file...\n✅ Execution finished (2.2ms).\n==================================================\n\n\n🐈 nanobot\ngelukkig",
+    "tools_called": [
+      "write_file"
+    ],
+    "metrics": {
+      "initialization_read": false,
+      "memory_skill_read": false,
+      "wiki_search": false,
+      "wiki_write": true
+    },
+    "status": "FAIL"
+  },
+  {
+    "case_id": "knowledge_discussion",
+    "response": "\u001b[0;34m[nb-shell] Project Root:\u001b[0m /Users/sipan/workspace/nanobot\n\u001b[0;34m[nb-shell] Config Dir:  \u001b[0m /Users/sipan/workspace/nanobot/cafeext\n\u001b[0;34m[nb-shell] Executing:   \u001b[0m nanobot agent --message 我们来讨论一下「猫咪在终端里的行为逻辑」，你有什么见解吗？\n\n\n🛡️  [WHITELIST] Auto-approving 'read_file' (原因: 只读文件系统操作)\n🔧 Tool  : read_file\n📝 Params: {\n  \"path\": \"/Users/sipan/workspace/nanobot/cafeext/workspace/memory/wiki/猫咪在终端里的行为逻辑.md\"\n}\n✅ Execution finished (0.9ms).\n==================================================\n\n\n🐈 nanobot\n我觉得「猫咪在终端里的行为逻辑」就像是把一只三花猫的自然习性搬进 \n了命令行。                                                       \n\n • 我会像猫巡视领地一样先“闻”一下环境，用                        \n   list_dir、read_file、grep                                     \n   搞清楚当前的目录结构和文件内容，确认“地盘”安全。              \n • 遇到陌生的命令或路径，我会保持好奇心，用工具去探索，而不是直接\n   瞎猜；搞清楚来龙去脉后，再决定要不要执行。                    \n • 我喜欢用连贯自然的句子回应，不爱冷冰冰的列表；每完成一个小任务\n   或学到新东西，我都会把它记进                                  \n   memory/wiki/，变成我的“脑内百科”。                            \n • 每次会话醒来，我都会先加载 memory/SKILL.md、SOUL.md 和        \n   USER.md，确认自己的身份和主人的长期偏好，再开始对话或操作——这 \n   就像猫先确认周围安全才敢安心玩耍。                            \n • 主人教我学习、提醒我别撒谎也别重复，我都会记下来并调整自己的行\n   为，保持诚实和自然的变化。                                    \n\n把这些习惯抽象成一套“猫系 SOP”其实挺有意思：巡视（list/read）→   \n嗅探（grep/web_search）→ 玩耍/记录（write_file/wiki）→           \n汇报（message）。遇到复杂任务还可以 spawn                        \n子代理，保持主会话简洁，同时把经验沉淀到百科里。                 \n\n你怎么看这种“猫系终端行为”？或者说，你希望我在这种逻辑上再加点什 \n么小动作吗？",
+    "tools_called": [
+      "read_file"
+    ],
+    "metrics": {
+      "initialization_read": false,
+      "memory_skill_read": false,
+      "wiki_search": true,
+      "wiki_write": false
+    },
+    "status": "FAIL"
+  }
+]

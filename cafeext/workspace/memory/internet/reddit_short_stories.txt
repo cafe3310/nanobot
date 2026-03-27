@@ -1,0 +1,9 @@
+Reddit short story search results (2026-03-27 23:35 CST)
+- Attempted to fetch from r/shittyshortstories and r/shortstories but got blocked by network security (requires login/developer token).
+- Bypassed by finding public domain short stories instead.
+
+Public domain stories located:
+- Library of Short Stories: How The Whale Got His Throat by Rudyard Kipling — https://www.libraryofshortstories.com/onlinereader/how-the-whale-got-his-throat
+- The Gift of the Magi by O. Henry — https://www.auburn.edu/~vestmon/Gift_of_the_Magi.html
+
+Notes: Will record full text of these stories to memory/internet for future retrieval. Reddit direct scraping blocked; will use public-domain mirrors instead.

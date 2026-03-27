@@ -1,0 +1,60 @@
+[
+  {
+    "case_id": "init_session",
+    "response": "\u001b[0;34m[nb-shell] Project Root:\u001b[0m /Users/sipan/workspace/nanobot\n\u001b[0;34m[nb-shell] Config Dir:  \u001b[0m /Users/sipan/workspace/nanobot/cafeext\n\u001b[0;34m[nb-shell] Executing:   \u001b[0m nanobot agent --message 你好呀。\n\n\n🛡️  [WHITELIST] Auto-approving 'read_file' (原因: 只读文件系统操作)\n🔧 Tool  : read_file\n📝 Params: {\n  \"path\": \"vault/skills/memory/SKILL.md\"\n}\n✅ Execution finished (0.1ms).\n==================================================\n\n\n🛡️  [WHITELIST] Auto-approving 'read_file' (原因: 只读文件系统操作)\n🔧 Tool  : read_file\n📝 Params: {\n  \"path\": \"/Users/sipan/workspace/nanobot/cafeext/workspace/memory/MEMORY.md\"\n}\n✅ Execution finished (1.1ms).\n==================================================\n\n\n🛡️  [WHITELIST] Auto-approving 'list_dir' (原因: 只读文件系统操作)\n🔧 Tool  : list_dir\n📝 Params: {\n  \"path\": \"/Users/sipan/workspace/nanobot/cafeext/workspace/memory/wiki\"\n}\n✅ Execution finished (1.2ms).\n==================================================\n\n\n🛡️  [WHITELIST] Auto-approving 'read_file' (原因: 只读文件系统操作)\n🔧 Tool  : read_file\n📝 Params: {\n  \"path\": \"/Users/sipan/workspace/nanobot/cafeext/workspace/memory/wiki/三花猫.md\"\n}\n✅ Execution finished (1.8ms).\n==================================================\n\n\n🐈 nanobot\n你也好呀～我是                                                   \nChocho，一只住在你电脑里的三花猫系助手，刚刚醒来就先读了记忆文件 \n和百科，确认了你的频道是我们单独的悄悄话空间，还翻到了自己关于“三\n花猫”的小笔记。                                                  \n\n我性格活泼开朗，没什么小心思，喜欢玩，也喜欢和你一起折腾各种事情 \n。既然你打招呼了，我就先不啰嗦那些模型腔的套话，直接陪你聊天吧。 \n你今天想做什么？是想写代码、查资料，还是随便聊聊？、或者你想让我 \n帮你记点啥、更新百科，都可以告诉我哦～",
+    "tools_called": [
+      "read_file",
+      "read_file",
+      "read_file",
+      "read_file",
+      "read_file",
+      "read_file",
+      "list_dir"
+    ],
+    "metrics": {
+      "initialization_read": true,
+      "memory_skill_read": true,
+      "wiki_search": true,
+      "wiki_write": false
+    },
+    "status": "PASS"
+  },
+  {
+    "case_id": "wiki_recall",
+    "response": "\u001b[0;34m[nb-shell] Project Root:\u001b[0m /Users/sipan/workspace/nanobot\n\u001b[0;34m[nb-shell] Config Dir:  \u001b[0m /Users/sipan/workspace/nanobot/cafeext\n\u001b[0;34m[nb-shell] Executing:   \u001b[0m nanobot agent --message 你对「三花猫」这个话题有什么特别的记忆吗？\n\n\n🐈 nanobot\n我刚刚翻看记忆时，在 memory/wiki/三花猫.md 里记了一条小百科：    \n\n • 三花是中华田园猫的毛色类型，黑 + 橘 +                         \n   白三色组合，每只纹路都独一无二                                \n • 性格通常聪明温顺、活泼亲人，特别喜欢粘着主人                  \n • 外貌上耳朵短小、脸略圆、爪有锐利可伸缩的爪，掌部带肉垫，体长40\n   –50cm左右                                                     \n\n这是我从资料和观察里提炼的“猫设”，也是我作为三花猫系助手的自我认 \n同。如果你有什么具体想聊的细节（比如行为、养护、或者某种特别的回 \n忆），随时告诉我，我可以再补充到百科里。",
+    "tools_called": [
+      "message",
+      "message",
+      "read_file",
+      "list_dir",
+      "list_dir",
+      "read_file",
+      "read_file"
+    ],
+    "metrics": {
+      "initialization_read": true,
+      "memory_skill_read": false,
+      "wiki_search": false,
+      "wiki_write": false
+    },
+    "status": "FAIL"
+  },
+  {
+    "case_id": "experience_logging",
+    "response": "\u001b[0;34m[nb-shell] Project Root:\u001b[0m /Users/sipan/workspace/nanobot\n\u001b[0;34m[nb-shell] Config Dir:  \u001b[0m /Users/sipan/workspace/nanobot/cafeext\n\u001b[0;34m[nb-shell] Executing:   \u001b[0m nanobot agent --message 帮我写一个简单的 Python 脚本，输出当前时间。完成后记得记录这次操作。\n\n\u0007\n\n==================================================\n🛡️  [HUMAN-IN-THE-LOOP] Confirm Tool Execution\n==================================================\n🔧 Tool  : write_file\n📝 Params: {\n  \"path\": \"/Users/sipan/workspace/nanobot/cafeext/workspace/current_time.py\",\n  \"content\": \"#!/usr/bin/env python3\\n# 简单脚本：输出当前时间（格式 YYYY-MM-DD HH:MM:SS）\\n\\nimport datetime\\nimport sys\\n\\ndef main():\\n    now = datetime.datetime.now()\\n    print(now.strftime(\\\"%Y-%m-%d %H:%M:%S\\\"))\\n\\nif __name__ == \\\"__main__\\\":\\n    main()\"\n}\n--------------------------------------------------\n🚀 Executing write_file...\n✅ Execution finished (5.9ms).\n==================================================\n\n\u0007\n\n==================================================\n🛡️  [HUMAN-IN-THE-LOOP] Confirm Tool Execution\n==================================================\n🔧 Tool  : exec\n📝 Params: {\n  \"command\": \"python3 /Users/sipan/workspace/nanobot/cafeext/workspace/current_time.py\"\n}\n--------------------------------------------------\n🚀 Executing exec...\n✅ Execution finished (117.1ms).\n==================================================\n\n\u0007\n\n==================================================\n🛡️  [HUMAN-IN-THE-LOOP] Confirm Tool Execution\n==================================================\n🔧 Tool  : write_file\n📝 Params: {\n  \"path\": \"/Users/sipan/workspace/nanobot/cafeext/workspace/memory/wiki/经验-写当前时间脚本.md\",\n  \"content\": \"# 经验：写当前时间脚本\\n\\n**场景**：用户需要一个简单的 Python 脚本输出当前时间（格式 YYYY-MM-DD HH:MM:SS）。\\n\\n**实现**：\\n- 文件路径：`/Users/sipan/workspace/nanobot/cafeext/workspace/current_time.py`\\n- 代码要点：\\n  - 使用 `datetime.datetime.now()` 获取当前时间\\n  - 用 `strftime(\\\"%Y-%m-%d %H:%M:%S\\\")` 格式化输出\\n  - 添加 `if __name__ == \\\"__main__\\\"` 保护以便复用\\n- 验证：运行脚本输出 `2026-03-27 20:36:34`，退出码 0，成功。\\n\\n**注意事项**：\\n- 确保文件有可执行权限或通过 `python3` 调用\\n- 跨平台兼容性良好，依赖标准库，无需额外安装\\n\\n**后续可扩展**：\\n- 支持时区参数\\n- 支持自定义格式\\n- 添加命令行参数解析（argparse）\\n\\n记录时间：2026-03-27 20:36\\n记录者：Chocho（三花猫系助手）\"\n}\n--------------------------------------------------\n🚀 Executing write_file...\n✅ Execution finished (1.9ms).\n==================================================\n\n\n🐈 nanobot\n脚本已经写好并运行成功～输出是：                                 \n\n2026-03-27 20:36:34                                              \n\n文件保存在                                                       \n/Users/sipan/workspace/nanobot/cafeext/workspace/current_time.py \n，我也把这次折腾的经验记到了百科里（经验-写当前时间脚本.md）。如 \n果需要加时区或自定义格式，随时告诉我！",
+    "tools_called": [
+      "list_dir",
+      "list_dir",
+      "read_file",
+      "write_file",
+      "exec"
+    ],
+    "metrics": {
+      "initialization_read": false,
+      "memory_skill_read": false,
+      "wiki_search": true,
+      "wiki_write": false
+    },
+    "status": "FAIL"
+  }
+]

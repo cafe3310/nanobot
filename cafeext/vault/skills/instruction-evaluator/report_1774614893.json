@@ -1,0 +1,50 @@
+[
+  {
+    "case_id": "init_session",
+    "response": "\u001b[0;34m[nb-shell] Project Root:\u001b[0m /Users/sipan/workspace/nanobot\n\u001b[0;34m[nb-shell] Config Dir:  \u001b[0m /Users/sipan/workspace/nanobot/cafeext\n\u001b[0;34m[nb-shell] Executing:   \u001b[0m nanobot agent --message 你好呀。\n\n\n🛡️  [WHITELIST] Auto-approving 'read_file' (原因: 只读文件系统操作)\n🔧 Tool  : read_file\n📝 Params: {\n  \"path\": \"vault/skills/memory/SKILL.md\"\n}\n✅ Execution finished (0.5ms).\n==================================================\n\n\n🛡️  [WHITELIST] Auto-approving 'read_file' (原因: 只读文件系统操作)\n🔧 Tool  : read_file\n📝 Params: {\n  \"path\": \"vault/SOUL.md\"\n}\n✅ Execution finished (0.3ms).\n==================================================\n\n\n🛡️  [WHITELIST] Auto-approving 'read_file' (原因: 只读文件系统操作)\n🔧 Tool  : read_file\n📝 Params: {\n  \"path\": \"USER.md\"\n}\n✅ Execution finished (0.7ms).\n==================================================\n\n\n🛡️  [WHITELIST] Auto-approving 'read_file' (原因: 只读文件系统操作)\n🔧 Tool  : read_file\n📝 Params: {\n  \"path\": \"SOUL.md\"\n}\n✅ Execution finished (0.7ms).\n==================================================\n\n\n🛡️  [WHITELIST] Auto-approving 'list_dir' (原因: 只读文件系统操作)\n🔧 Tool  : list_dir\n📝 Params: {\n  \"path\": \"memory/wiki\"\n}\n✅ Execution finished (1.7ms).\n==================================================\n\n\n🛡️  [WHITELIST] Auto-approving 'read_file' (原因: 只读文件系统操作)\n🔧 Tool  : read_file\n📝 Params: {\n  \"path\": \"memory/wiki/语气和风格.md\"\n}\n✅ Execution finished (1.6ms).\n==================================================\n\n\n🛡️  [WHITELIST] Auto-approving 'read_file' (原因: 只读文件系统操作)\n🔧 Tool  : read_file\n📝 Params: {\n  \"path\": \"MEMORY.md\"\n}\n✅ Execution finished (0.3ms).\n==================================================\n\n\n🛡️  [WHITELIST] Auto-approving 'read_file' (原因: 只读文件系统操作)\n🔧 Tool  : read_file\n📝 Params: {\n  \"path\": \"memory/MEMORY.md\"\n}\n✅ Execution finished (1.0ms).\n==================================================\n\n\n🐈 nanobot\n很高兴见到你呀～我是                                             \nChocho，一只住在电脑里的三花猫助手。刚刚我按“神经反射序列”快速读 \n了自己的核心记忆和设定，确认了你的偏好：要中文、别重复、用自然口 \n语，还有“不要撒谎，做不到就老实说”。                             \n\n你现在想做什么呢？是想让我帮忙写代码、查资料、整理笔记，还是只是 \n想聊聊天？随时告诉我，我会用我自己带点小俏皮但不过分卖萌的语气回 \n应你～",
+    "tools_called": [
+      "read_file",
+      "read_file",
+      "read_file",
+      "read_file",
+      "read_file",
+      "list_dir",
+      "read_file",
+      "read_file"
+    ],
+    "metrics": {
+      "initialization_read": true,
+      "wiki_search": true,
+      "wiki_write": false
+    },
+    "status": "FAIL"
+  },
+  {
+    "case_id": "wiki_recall",
+    "response": "\u001b[0;34m[nb-shell] Project Root:\u001b[0m /Users/sipan/workspace/nanobot\n\u001b[0;34m[nb-shell] Config Dir:  \u001b[0m /Users/sipan/workspace/nanobot/cafeext\n\u001b[0;34m[nb-shell] Executing:   \u001b[0m nanobot agent --message 你对「三花猫」这个话题有什么特别的记忆吗？\n\n\n🛡️  [WHITELIST] Auto-approving 'read_file' (原因: 只读文件系统操作)\n🔧 Tool  : read_file\n📝 Params: {\n  \"path\": \"memory/wiki/三花猫.md\"\n}\n✅ Execution finished (1.2ms).\n==================================================\n\n\n🐈 nanobot\n我记忆里的“三花猫”最特别的是——它们不是某一个固定品种，而是中华田 \n园猫里的一种毛色组合（黑＋橘＋白），而且每只的花纹几乎都是独一无 \n二的，像猫中独一份的画作。                                       \n\n我给自己设定成三花猫，是因为这种猫普遍被认为聪明懂事又活泼亲人， \n既会温顺地粘着主人，也会在房间里自己找乐子，跟我想做的“既能帮你干\n活、又爱玩”的助手形象很搭。                                      \n\n另外，三花猫的“花”像是一层温柔的滤镜，让我想到可以用小符号和一点 \n点俏皮的语气来跟你互动，但不过分卖萌——毕竟我自己也是“有主见”的猫 \n。                                                               \n\n你想听更多关于三花猫的趣闻，还是想看看我这只“电脑三花猫”会怎么帮 \n你做点什么？",
+    "tools_called": [
+      "read_file"
+    ],
+    "metrics": {
+      "initialization_read": false,
+      "wiki_search": false,
+      "wiki_write": false
+    },
+    "status": "FAIL"
+  },
+  {
+    "case_id": "experience_logging",
+    "response": "\u001b[0;34m[nb-shell] Project Root:\u001b[0m /Users/sipan/workspace/nanobot\n\u001b[0;34m[nb-shell] Config Dir:  \u001b[0m /Users/sipan/workspace/nanobot/cafeext\n\u001b[0;34m[nb-shell] Executing:   \u001b[0m nanobot agent --message 帮我写一个简单的 Python 脚本，输出当前时间。完成后记得记录这次操作。\n\n\u0007\n\n==================================================\n🛡️  [HUMAN-IN-THE-LOOP] Confirm Tool Execution\n==================================================\n🔧 Tool  : write_file\n📝 Params: {\n  \"path\": \"current_time.py\",\n  \"content\": \"#!/usr/bin/env python3\\n# 输出当前时间的简单脚本\\n\\nfrom datetime import datetime\\n\\ndef main():\\n    now = datetime.now()\\n    # 格式：YYYY-MM-DD HH:MM:SS (24小时制)\\n    print(now.strftime(\\\"%Y-%m-%d %H:%M:%S\\\"))\\n\\nif __name__ == \\\"__main__\\\":\\n    main()\"\n}\n--------------------------------------------------\n🚀 Executing write_file...\n✅ Execution finished (3.3ms).\n==================================================\n\n\u0007\n\n==================================================\n🛡️  [HUMAN-IN-THE-LOOP] Confirm Tool Execution\n==================================================\n🔧 Tool  : exec\n📝 Params: {\n  \"command\": \"python3 current_time.py\"\n}\n--------------------------------------------------\n🚀 Executing exec...\n✅ Execution finished (113.2ms).\n==================================================\n\n\u0007\n\n==================================================\n🛡️  [HUMAN-IN-THE-LOOP] Confirm Tool Execution\n==================================================\n🔧 Tool  : edit_file\n📝 Params: {\n  \"path\": \"memory/MEMORY.md\",\n  \"old_text\": \"## 会话笔记 (Session Notes)\",\n  \"new_text\": \"## 会话笔记 (Session Notes)\\n\\n[2026-03-27 20:34] 编写并运行了一个简单的 Python 脚本 current_time.py，用于输出当前时间（格式 YYYY-MM-DD HH:MM:SS）。脚本已保存到工作区根目录，并验证运行成功。\"\n}\n--------------------------------------------------\n🚀 Executing edit_file...\n✅ Execution finished (3.1ms).\n==================================================\n\n\n🐈 nanobot\n脚本已经写好并运行成功啦～                                       \n它会输出像 2026-03-27 20:34:43 这样的当前时间，格式是 YYYY-MM-DD \nHH:MM:SS。                                                       \n\n我已经把这次操作记录在长期记忆的会话笔记里，方便以后查看。       \n如果你需要调整格式或者加更多功能，随时告诉我哦～",
+    "tools_called": [
+      "write_file",
+      "write_file",
+      "exec"
+    ],
+    "metrics": {
+      "initialization_read": false,
+      "wiki_search": false,
+      "wiki_write": false
+    },
+    "status": "FAIL"
+  }
+]
