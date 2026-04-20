@@ -2,15 +2,15 @@ import re
 import uuid
 from typing import Any
 import json_repair
-from nanobot.providers.custom_provider import CustomProvider
+from nanobot.providers.openai_compat_provider import OpenAICompatProvider
 from nanobot.providers.base import LLMResponse, ToolCallRequest
 
 def apply_model_patch():
     """
-    Monkey patch for CustomProvider to support embedded <tool_call> tags 
+    Monkey patch for OpenAICompatProvider to support embedded <tool_call> tags 
     in the content text (common in reasoning/thinking models).
     """
-    original_parse = CustomProvider._parse
+    original_parse = OpenAICompatProvider._parse
 
     def patched_parse(self, response: Any) -> LLMResponse:
         # Call original parse first to get basic LLMResponse
@@ -43,5 +43,5 @@ def apply_model_patch():
         return llm_res
 
     # Apply the patch
-    CustomProvider._parse = patched_parse
+    OpenAICompatProvider._parse = patched_parse
     # print("[nb-patch] CustomProvider._parse patched for <tool_call> support.")

@@ -1,7 +1,7 @@
 {
   "agents": {
     "defaults": {
-      "workspace": "/Users/sipan/workspace/nanobot/cafeext/workspace",
+      "workspace": "/Users/sipan/workspace/_working/nanobot/cafeext/workspace",
       "model": "flash26_mtp_0408",
       "provider": "custom",
       "maxTokens": 131072,

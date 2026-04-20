@@ -44,55 +44,50 @@ def apply_prompt_patch():
         import nanobot.agent.context
         ContextBuilder = nanobot.agent.context.ContextBuilder
 
-        original_get_identity = ContextBuilder._get_identity
+        # 我们不再通过拦截 _get_identity 来做复杂的 replace，而是直接重写 build_system_prompt
+        # 这样更健壮，且能完全控制各部分的顺序。
 
-        def patched_get_identity(self):
-            # 获取原始的硬编码提示词
-            identity = original_get_identity(self)
+        def patched_build_system_prompt(self, skill_names: list[str] | None = None, channel: str | None = None) -> str:
+            """完全定制化的系统提示词构造流程。"""
+            
+            # 1. 注入我们的核心角色设定与 SOP
+            parts = [OVERRIDE_TITLE]
+            
+            # 2. 注入原版的 Identity (包含 Runtime, Workspace, Format Hint 等)
+            # 注意：我们将原版 Identity 作为辅助背景
+            raw_identity = self._get_identity(channel=channel)
+            parts.append(f"# 系统环境与规则\n\n{raw_identity}")
+            
+            # 3. 注入我们的基础操作规则
+            parts.append(OVERRIDE_GUIDELINES)
 
-            # 1. 覆盖标题和基础设定
-            identity = identity.replace(
-                "# nanobot 🐈\n\nYou are nanobot, a helpful AI assistant.",
-                OVERRIDE_TITLE
-            )
-
-            # 2. 覆盖默认的 Guidelines (英文 -> 中文)
-            # 使用 split 分割出原始 Guidelines 部分，并进行替换
-            if "## nanobot Guidelines" in identity:
-                # 找到 Guidelines 的起始位置
-                parts = identity.split("## nanobot Guidelines")
-                # 替换掉原始的 Guidelines
-                identity = parts[0] + OVERRIDE_GUIDELINES
-
-            return identity
-
-        def patched_build_system_prompt(self, skill_names: list[str] | None = None) -> str:
-            """重写 build_system_prompt 以支持完全定制的 Markdown 技能清单。"""
-            parts = [self._get_identity()]
-
+            # 4. 加载 Bootstrap 文件 (如果有)
             bootstrap = self._load_bootstrap_files()
             if bootstrap:
                 parts.append(bootstrap)
 
+            # 5. 加载记忆上下文
             memory = self.memory.get_memory_context()
             if memory:
                 parts.append(f"# Memory\n\n{memory}")
 
+            # 6. 加载固定加载的技能 (Always Skills)
             always_skills = self.skills.get_always_skills()
             if always_skills:
                 always_content = self.skills.load_skills_for_context(always_skills)
                 if always_content:
-                    parts.append(f"# Active Skills\n\n{always_content}")
+                    parts.append(f"# Active Skills (Always On)\n\n{always_content}")
 
-            # 注入咱们定制的 Markdown 技能清单
+            # 7. 注入我们定制的 Markdown 技能清单 (Sidecar 特色：支持目录层级显示)
             skills_summary = self.skills.build_skills_summary()
             if skills_summary:
                 parts.append(skills_summary)
 
             return "\n\n---\n\n".join(parts)
 
-        ContextBuilder._get_identity = patched_get_identity
+        # 应用补丁
         ContextBuilder.build_system_prompt = patched_build_system_prompt
+        # print("[nb-patch] ContextBuilder.build_system_prompt patched.")
 
     except Exception as e:
         print(f"Warning: Failed to apply prompt override patch: {e}")

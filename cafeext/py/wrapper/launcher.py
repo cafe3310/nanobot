@@ -197,11 +197,11 @@ def setup_injection():
                 f.unlink()
         print("Done. Bot memory is now fresh.")
 
-    # 3. 拦截 CustomProvider 以捕获日志
+    # 3. 拦截 OpenAICompatProvider 以捕获日志
     try:
-        from nanobot.providers.custom_provider import CustomProvider
+        from nanobot.providers.openai_compat_provider import OpenAICompatProvider
         from cafeext.py.callbacks.logger import cafe_input_callback, cafe_success_callback, cafe_failure_callback
-        original_chat = CustomProvider.chat
+        original_chat = OpenAICompatProvider.chat
         @wraps(original_chat)
         async def patched_chat(self, *args, **kwargs):
             messages = kwargs.get("messages") or (args[0] if len(args) > 0 else [])
@@ -220,20 +220,9 @@ def setup_injection():
             except Exception as e:
                 cafe_failure_callback(log_kwargs, e, start_time, datetime.now())
                 raise e
-        CustomProvider.chat = patched_chat
+        OpenAICompatProvider.chat = patched_chat
     except Exception as e:
-        print(f"Warning: CustomProvider log injection failed: {e}")
-
-    # 4. 设置 LiteLLM 日志
-    try:
-        import litellm
-        litellm.log_raw_request_response = True
-        from cafeext.py.callbacks.logger import cafe_input_callback, cafe_success_callback, cafe_failure_callback
-        litellm.input_callback = [cafe_input_callback]
-        litellm.success_callback = [cafe_success_callback]
-        litellm.failure_callback = [cafe_failure_callback]
-    except Exception as e:
-        print(f"Warning: LiteLLM logging setup failed: {e}")
+        print(f"Warning: OpenAICompatProvider log injection failed: {e}")
 
 def main():
     load_dotenv(DOTENV_PATH)
