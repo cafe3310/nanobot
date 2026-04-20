@@ -210,7 +210,19 @@ def apply_security_policy():
 
         original_pub_out = MessageBus.publish_outbound
         async def patched_pub_out(self, msg):
-            cafe_message_log("outbound", msg.channel, msg.chat_id, msg.content)
+            # 识别消息语义，进行分类审计
+            meta = msg.metadata if isinstance(msg.metadata, dict) else {}
+            is_delta = meta.get("_stream_delta")
+            is_end = meta.get("_stream_end")
+            is_progress = meta.get("_progress")
+            
+            if is_progress:
+                # 将 UI 进度提示（如 "$ ls -la"）记录为工具执行动作，而非回复
+                cafe_message_log("tool_start", msg.channel, msg.chat_id, msg.content)
+            elif not (is_delta or is_end):
+                # 仅记录最终汇总的回复
+                cafe_message_log("outbound", msg.channel, msg.chat_id, msg.content)
+                
             return await original_pub_out(self, msg)
         MessageBus.publish_outbound = patched_pub_out
 

@@ -105,7 +105,22 @@ def cafe_success_callback(kwargs, completion_response, start_time, end_time):
     """处理推理成功响应日志"""
     try:
         res_content = ""
-        if hasattr(completion_response, "choices") and completion_response.choices:
+        reasoning = None
+        
+        # 适配 nanobot v0.1.5+ 的 LLMResponse 对象
+        if hasattr(completion_response, "content"):
+            res_content = completion_response.content or ""
+            if hasattr(completion_response, "tool_calls") and completion_response.tool_calls:
+                # 如果有工具调用且没有内容，显示工具调用
+                if not res_content:
+                    res_content = f"Call tools: {completion_response.tool_calls}"
+                else:
+                    res_content += f" (Tools: {completion_response.tool_calls})"
+            
+            # 提取推理内容 (Thinking)
+            reasoning = getattr(completion_response, "reasoning_content", None)
+        # 兼容旧版本的 OpenAI 响应对象
+        elif hasattr(completion_response, "choices") and completion_response.choices:
             msg = completion_response.choices[0].message
             res_content = msg.content or (f"Call tools: {msg.tool_calls}" if msg.tool_calls else "")
         else:
@@ -115,7 +130,12 @@ def cafe_success_callback(kwargs, completion_response, start_time, end_time):
             "model": kwargs.get("model", "unknown"),
             "duration": f"{(end_time - start_time).total_seconds():.2f}s"
         }
-        context = [{"role": "assistant", "content": res_content}]
+        
+        context = []
+        if reasoning:
+            context.append({"role": "thinking", "content": reasoning})
+        context.append({"role": "assistant", "content": res_content})
+        
         write_pretty_entry("success", attrs, context)
     except Exception as e:
         print(f"DEBUG: Success logging failed: {e}")

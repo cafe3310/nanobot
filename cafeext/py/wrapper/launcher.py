@@ -202,26 +202,31 @@ def setup_injection():
     try:
         from nanobot.providers.openai_compat_provider import OpenAICompatProvider
         from cafeext.py.callbacks.logger import cafe_input_callback, cafe_success_callback, cafe_failure_callback
-        original_chat = OpenAICompatProvider.chat
-        @wraps(original_chat)
-        async def patched_chat(self, *args, **kwargs):
-            messages = kwargs.get("messages") or (args[0] if len(args) > 0 else [])
-            tools = kwargs.get("tools") or (args[1] if len(args) > 1 else None)
-            log_kwargs = {
-                "model": kwargs.get("model") or getattr(self, "default_model", "unknown"),
-                "api_base": self.api_base,
-                "additional_args": {"complete_input_dict": {"messages": messages, "tools": tools}}
-            }
-            cafe_input_callback(log_kwargs)
-            start_time = datetime.now()
-            try:
-                response = await original_chat(self, *args, **kwargs)
-                cafe_success_callback(log_kwargs, response, start_time, datetime.now())
-                return response
-            except Exception as e:
-                cafe_failure_callback(log_kwargs, e, start_time, datetime.now())
-                raise e
-        OpenAICompatProvider.chat = patched_chat
+        
+        def create_patched_chat(original_method):
+            @wraps(original_method)
+            async def patched_chat(self, *args, **kwargs):
+                messages = kwargs.get("messages") or (args[0] if len(args) > 0 else [])
+                tools = kwargs.get("tools") or (args[1] if len(args) > 1 else None)
+                log_kwargs = {
+                    "model": kwargs.get("model") or getattr(self, "default_model", "unknown"),
+                    "api_base": self.api_base,
+                    "additional_args": {"complete_input_dict": {"messages": messages, "tools": tools}}
+                }
+                cafe_input_callback(log_kwargs)
+                start_time = datetime.now()
+                try:
+                    response = await original_method(self, *args, **kwargs)
+                    cafe_success_callback(log_kwargs, response, start_time, datetime.now())
+                    return response
+                except Exception as e:
+                    cafe_failure_callback(log_kwargs, e, start_time, datetime.now())
+                    raise e
+            return patched_chat
+
+        OpenAICompatProvider.chat = create_patched_chat(OpenAICompatProvider.chat)
+        OpenAICompatProvider.chat_stream = create_patched_chat(OpenAICompatProvider.chat_stream)
+
     except Exception as e:
         print(f"Warning: OpenAICompatProvider log injection failed: {e}")
 
