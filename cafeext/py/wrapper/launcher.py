@@ -190,18 +190,12 @@ def setup_injection():
         except KeyboardInterrupt:
             print("\nStopped tailing logs.")
 
-    @app.command(name="reset", help="Clear session history and logs", rich_help_panel=panel_name)
-    def reset_data(logs: bool = False):
+    @app.command(name="reset", help="Clear session history", rich_help_panel=panel_name)
+    def reset_data():
         if session_path.exists():
             print(f"Clearing sessions in {session_path}...")
             shutil.rmtree(session_path)
             session_path.mkdir(parents=True, exist_ok=True)
-        if logs and log_dir.exists():
-            print(f"Clearing inference logs in {log_dir}...")
-            for f in log_dir.glob("*.log"):
-                f.unlink()
-            for f in log_dir.glob("*.jsonl"): # 清理旧格式
-                f.unlink()
         print("Done. Bot memory is now fresh.")
 
     # 3. 拦截 OpenAICompatProvider 以捕获日志
