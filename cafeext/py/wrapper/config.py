@@ -1,5 +1,8 @@
-"""Sidecar 核心配置中心。
-集中管理路径、安全策略、日志表现等所有定制化参数。
+"""
+=== cafe3310 nanobot sidecar function ===
+注入点：中央配置中心，被所有 wrapper 模块引用。
+作用：集中管理 Workspace、Vault 和 Logs 的物理路径，定义工具禁用名单、白名单规则及日志视觉化 Emoji 映射。
+=== end(keep this block) ===
 """
 
 from pathlib import Path

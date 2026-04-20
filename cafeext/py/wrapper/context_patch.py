@@ -1,7 +1,8 @@
-"""上下文金库 (Vault) 补丁。
-修正路径规范：统一使用 memory/MEMORY.md 结构。
-实现层级化叠加：Vault (核心) + Workspace (扩展)。
-支持全量对齐文件：AGENTS, HEARTBEAT, SOUL, USER, TOOLS。
+"""
+=== cafe3310 nanobot sidecar function ===
+注入点：拦截 nanobot.agent.context.ContextBuilder 与 nanobot.agent.memory.MemoryStore。
+作用：实现层级化上下文叠加（Vault 提供长期核心设定，Workspace 提供临时事实），并将 Memory 物理存储重定向至 Vault 目录，确保多项目共用核心记忆。
+=== end(keep this block) ===
 """
 
 import json

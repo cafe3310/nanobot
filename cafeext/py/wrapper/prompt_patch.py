@@ -1,5 +1,8 @@
-"""提示词覆盖补丁 (Prompt Override Patch)。
-允许拦截并覆盖 nanobot 的原生硬编码提示词片段。
+"""
+=== cafe3310 nanobot sidecar function ===
+注入点：拦截 nanobot.agent.context.ContextBuilder.build_system_prompt。
+作用：完全接管系统提示词构造流程。注入 Chocho 的三花猫人格设定，并强制实施「神经反射 SOP」（唤醒时必须读取 memory skill 和核心金库文件）。
+=== end(keep this block) ===
 """
 
 from cafeext.py.wrapper.config import VAULT_DIR

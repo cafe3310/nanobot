@@ -1,3 +1,10 @@
+"""
+=== cafe3310 nanobot sidecar function ===
+注入点：拦截 nanobot.providers.openai_compat_provider.OpenAICompatProvider._parse。
+作用：支持推理模型（如 Thinking 模型）常用的 XML 格式工具调用。从推理文本中提取嵌入式的 <tool_call> 标签并转化为标准工具请求。
+=== end(keep this block) ===
+"""
+
 import re
 import uuid
 from typing import Any

@@ -1,5 +1,8 @@
 """
-安全策略常量定义与拦截逻辑。
+=== cafe3310 nanobot sidecar function ===
+注入点：拦截 nanobot.agent.tools.registry.ToolRegistry (execute/register) 与 nanobot.bus.queue.MessageBus (publish)。
+作用：强制执行安全审计与白名单机制。非白名单工具触发 macOS 原生确认或终端物理确认；全量审计工具执行参数及消息总线流量。
+=== end(keep this block) ===
 """
 
 import time

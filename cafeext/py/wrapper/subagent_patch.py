@@ -1,5 +1,8 @@
-"""增强型子代理补丁 (Subagent Extension Patch)。
-适配 nanobot v0.1.5+ 的 AgentRunner 架构，并支持 model 和 images 参数实现多模态委派。
+"""
+=== cafe3310 nanobot sidecar function ===
+注入点：拦截 nanobot.agent.tools.spawn.SpawnTool 与 nanobot.agent.subagent.SubagentManager。
+作用：增强子代理委派能力。支持通过 model 参数切换模型，通过 images 参数实现多模态委派，并为子代理的每一个迭代周期注入详细的审计日志。
+=== end(keep this block) ===
 """
 
 import json

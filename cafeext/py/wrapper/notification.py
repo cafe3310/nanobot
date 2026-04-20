@@ -1,4 +1,9 @@
-"""macOS 原生通知交互模块。"""
+"""
+=== cafe3310 nanobot sidecar function ===
+注入点：由 security.py 调用。
+作用：封装 macOS 原生通知交互。通过 AppleScript 弹出带按钮的对话框，为高风险工具操作提供 Human-in-the-loop 的本地物理确认。
+=== end(keep this block) ===
+"""
 
 import subprocess
 import json

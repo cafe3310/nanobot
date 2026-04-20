@@ -1,3 +1,10 @@
+"""
+=== cafe3310 nanobot sidecar function ===
+注入点：Sidecar 启动入口，拦截并注入 nanobot.cli.commands.app, nanobot.config.loader 及 OpenAICompatProvider.chat。
+作用：初始化 Sidecar 运行环境，注入安全策略与各项 Patch，提供 nb config/logs/doctor 等增强指令，并劫持 OpenAI 兼容 Provider 实现全链路日志审计。
+=== end(keep this block) ===
+"""
+
 import sys
 import os
 import json

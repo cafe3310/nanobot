@@ -1,5 +1,8 @@
-"""技能补丁 (Skill Patch)。
-支持严格优先级加载: vault/skills > builtin_skills > workspace/skills
+"""
+=== cafe3310 nanobot sidecar function ===
+注入点：拦截 nanobot.agent.skills.SkillsLoader (list_skills/load_skill/build_skills_summary)。
+作用：建立技能加载优先级链（Vault > Builtin > Workspace）；将技能清单展示格式重构为更自然的 Markdown 列表，增强模型对技能位置的感知。
+=== end(keep this block) ===
 """
 
 from cafeext.py.wrapper.config import VAULT_DIR

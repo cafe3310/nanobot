@@ -1,7 +1,8 @@
 """
-错误自愈补丁 (Error Recovery Patch)。
-适配 nanobot v0.1.5+ 的 AgentRunner 架构。
-拦截 LLM 错误响应，注入排查模板引导模型自我修正。
+=== cafe3310 nanobot sidecar function ===
+注入点：拦截 nanobot.agent.runner.AgentRunner.run。
+作用：实现错误自愈循环。当模型输出 JSON 错误或工具调用异常时，自动注入「排查模板」引导模型进行自我修正，显著提升复杂任务的成功率。
+=== end(keep this block) ===
 """
 
 from loguru import logger

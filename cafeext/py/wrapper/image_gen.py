@@ -1,5 +1,8 @@
-"""Google Imagen 生图集成工具。
-支持文本提示词与多参考图融合。
+"""
+=== cafe3310 nanobot sidecar function ===
+注入点：拦截 nanobot.agent.loop.AgentLoop._register_default_tools。
+作用：集成 Google Imagen 3 模型。动态注册 google-image-gen 工具，支持文本生图及多参考图融合创作。
+=== end(keep this block) ===
 """
 
 import os

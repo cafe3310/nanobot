@@ -1,3 +1,10 @@
+"""
+=== cafe3310 nanobot sidecar function ===
+注入点：由 launcher.py 拦截 OpenAICompatProvider.chat 并在其回调中被调用。
+作用：实现视觉化日志记录。格式化推理请求、成功/失败响应及工具链执行详情，支持 Base64 图片截断与 JSON 美化，生成人类可读的 .log 文件。
+=== end(keep this block) ===
+"""
+
 import os
 import json
 import time
